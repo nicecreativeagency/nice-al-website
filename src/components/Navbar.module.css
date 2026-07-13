@@ -1,0 +1,138 @@
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 48px;
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.scrolled {
+  background: #fff;
+  padding: 16px 48px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+}
+
+.scrolled .link {
+  color: #000;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 1001;
+}
+
+.logoSvg {
+  height: 36px;
+  width: auto;
+  transition: color 0.5s ease;
+  color: #fff;
+}
+
+.scrolled .logoSvg {
+  color: #000;
+}
+
+.links {
+  display: flex;
+  gap: 40px;
+}
+
+.link {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #fff;
+  transition: opacity 0.3s ease;
+  text-transform: uppercase;
+}
+
+.link:hover {
+  opacity: 0.5;
+}
+
+.burger {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  position: relative;
+  z-index: 1001;
+}
+
+.burger span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: #fff;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.scrolled .burger span {
+  background: #000;
+}
+
+.burgerOpen span {
+  background: #000 !important;
+}
+
+.burgerOpen span:first-child {
+  transform: rotate(45deg) translate(3px, 3px);
+}
+
+.burgerOpen span:last-child {
+  transform: rotate(-45deg) translate(3px, -3px);
+}
+
+.mobileMenu {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+}
+
+.mobileLink {
+  font-size: 48px;
+  font-weight: 800;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  transition: opacity 0.3s ease;
+}
+
+.mobileLink:hover {
+  opacity: 0.4;
+}
+
+@media (max-width: 768px) {
+  .nav {
+    padding: 20px 24px;
+  }
+
+  .scrolled {
+    padding: 16px 24px;
+  }
+
+  .links {
+    display: none;
+  }
+
+  .burger {
+    display: flex;
+  }
+
+  .logoSvg {
+    height: 28px;
+  }
+}
