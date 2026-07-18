@@ -1,0 +1,149 @@
+.footer {
+  position: relative;
+  background: #000;
+  color: #fff;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.marqueeLink {
+  display: block;
+  padding: 48px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.marquee {
+  font-size: clamp(48px, 11vw, 150px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  transition: opacity 0.4s ease;
+}
+
+.marqueeLink:hover .marquee {
+  opacity: 0.55;
+}
+
+.body {
+  padding: 80px 48px 40px;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  gap: 64px;
+  margin-bottom: 100px;
+  flex-wrap: wrap;
+}
+
+.cta {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  opacity: 0.4;
+  margin-bottom: 16px;
+}
+
+.email {
+  font-size: clamp(32px, 5vw, 68px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  transition: opacity 0.3s ease;
+}
+
+.email:hover {
+  opacity: 0.6;
+}
+
+.cols {
+  display: flex;
+  gap: 64px;
+  flex-wrap: wrap;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 120px;
+}
+
+.colTitle {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.4;
+  margin-bottom: 6px;
+}
+
+.colLink {
+  font-size: 15px;
+  font-weight: 500;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+  width: fit-content;
+}
+
+.colLink:hover {
+  opacity: 1;
+}
+
+.clock {
+  font-size: 15px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.place {
+  font-size: 13px;
+  opacity: 0.5;
+}
+
+.bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-top: 40px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.logo {
+  height: 30px;
+  width: auto;
+}
+
+.copy {
+  font-size: 12px;
+  font-weight: 400;
+  opacity: 0.35;
+}
+
+@media (max-width: 768px) {
+  .body {
+    padding: 56px 24px 32px;
+  }
+
+  .top {
+    flex-direction: column;
+    gap: 48px;
+    margin-bottom: 64px;
+  }
+
+  .cols {
+    gap: 40px;
+  }
+
+  .bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+}

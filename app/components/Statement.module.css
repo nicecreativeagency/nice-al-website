@@ -1,0 +1,50 @@
+.section {
+  position: relative;
+  min-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 160px 48px;
+  max-width: 1400px;
+  margin: 0 auto;
+  background: #000;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  opacity: 0.5;
+  margin-bottom: 48px;
+}
+
+.text {
+  font-size: clamp(30px, 4.6vw, 68px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.22;
+  color: #fff;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.28em;
+}
+
+.wordWrap {
+  display: inline-block;
+}
+
+.word {
+  display: inline-block;
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: 100px 24px;
+    min-height: 70vh;
+  }
+
+  .label {
+    margin-bottom: 32px;
+  }
+}

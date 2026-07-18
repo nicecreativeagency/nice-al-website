@@ -1,0 +1,25 @@
+.marquee {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.track {
+  display: inline-flex;
+  width: max-content;
+}
+
+.group {
+  display: inline-flex;
+  align-items: center;
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+}
+
+.sep {
+  margin: 0 0.5em;
+  opacity: 0.35;
+}

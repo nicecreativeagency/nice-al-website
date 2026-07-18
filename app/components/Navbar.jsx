@@ -4,6 +4,7 @@ import styles from './Navbar.module.css'
 
 const NAV_LINKS = [
   { label: 'Work', href: '#work' },
+  { label: 'What we do', href: '#capabilities' },
   { label: 'About', href: '#about' },
   { label: 'Products', href: '#products' },
   { label: 'Contact', href: '#contact' },
@@ -51,7 +52,7 @@ export default function Navbar() {
 
         <div className={styles.links}>
           {NAV_LINKS.map((link) => (
-            <a key={link.href} href={link.href} className={styles.link}>
+            <a key={link.href} href={link.href} className={styles.link} data-cursor="hover">
               {link.label}
             </a>
           ))}

@@ -1,0 +1,70 @@
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  padding: 48px;
+}
+
+.symbolWrap {
+  width: 120px;
+  height: 120px;
+}
+
+.symbol {
+  width: 100%;
+  height: 100%;
+}
+
+.meta {
+  position: absolute;
+  bottom: 48px;
+  left: 48px;
+  right: 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.tag {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  opacity: 0.5;
+}
+
+.count {
+  font-size: clamp(48px, 12vw, 120px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 0.8;
+  font-variant-numeric: tabular-nums;
+}
+
+.track {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.fill {
+  height: 100%;
+  background: #fff;
+}
+
+@media (max-width: 768px) {
+  .meta {
+    left: 24px;
+    right: 24px;
+    bottom: 32px;
+  }
+}

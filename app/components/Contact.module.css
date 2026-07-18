@@ -1,0 +1,302 @@
+.section {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 160px 48px;
+  background: #000;
+  color: #fff;
+  overflow: hidden;
+}
+
+.gridOverlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.gridOverlay svg {
+  width: 100%;
+  height: 100%;
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 56px;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  opacity: 0.5;
+}
+
+.progressWrap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.progressText {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.5;
+  font-variant-numeric: tabular-nums;
+}
+
+.progressTrack {
+  width: 120px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.progressFill {
+  height: 100%;
+  background: #fff;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sentence {
+  font-size: clamp(28px, 4.4vw, 60px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.4;
+  color: #fff;
+}
+
+.inputWrap {
+  position: relative;
+  display: inline-flex;
+  vertical-align: baseline;
+  max-width: 100%;
+}
+
+.sizer {
+  visibility: hidden;
+  white-space: pre;
+  padding: 0 4px;
+  font: inherit;
+  letter-spacing: inherit;
+}
+
+.input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  font: inherit;
+  letter-spacing: inherit;
+  color: #fff;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid rgba(255, 255, 255, 0.3);
+  padding: 0 4px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+  font-style: italic;
+  font-weight: 300;
+}
+
+.input:focus {
+  border-color: #fff;
+}
+
+.chips {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  vertical-align: middle;
+}
+
+.chip {
+  font-size: clamp(16px, 1.6vw, 22px);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  padding: 8px 20px;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  border-radius: 100px;
+  color: rgba(255, 255, 255, 0.6);
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  line-height: 1.2;
+}
+
+.chip:hover {
+  border-color: #fff;
+  color: #fff;
+}
+
+.chipActive {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+}
+
+.messageRow {
+  margin-top: 28px;
+  max-width: 720px;
+}
+
+.textarea {
+  width: 100%;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 300;
+  color: #fff;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 18px 20px;
+  outline: none;
+  resize: vertical;
+  transition: border-color 0.3s ease;
+}
+
+.textarea::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.textarea:focus {
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.actions {
+  margin-top: 40px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.error {
+  font-size: 15px;
+  font-weight: 400;
+  color: #fff;
+  opacity: 0.7;
+  order: 2;
+}
+
+.submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  background: #fff;
+  color: #000;
+  padding: 22px 44px;
+  border-radius: 100px;
+  transition: gap 0.3s ease;
+}
+
+.submit:hover {
+  gap: 20px;
+}
+
+.submitArrow {
+  font-size: 20px;
+}
+
+.success {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.successMark {
+  width: 88px;
+  height: 88px;
+  margin-bottom: 40px;
+}
+
+.successMark svg {
+  width: 100%;
+  height: 100%;
+}
+
+.successTitle {
+  font-size: clamp(36px, 6vw, 76px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-bottom: 24px;
+}
+
+.successText {
+  font-size: clamp(16px, 2vw, 20px);
+  font-weight: 300;
+  line-height: 1.6;
+  opacity: 0.65;
+  max-width: 480px;
+  margin-bottom: 40px;
+}
+
+.reset {
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 16px 32px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 100px;
+  transition: all 0.3s ease;
+}
+
+.reset:hover {
+  background: #fff;
+  color: #000;
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: 100px 24px;
+    min-height: auto;
+  }
+
+  .head {
+    margin-bottom: 40px;
+  }
+
+  .sentence {
+    line-height: 1.5;
+  }
+
+  .chip {
+    padding: 6px 16px;
+  }
+
+  .submit {
+    padding: 18px 36px;
+    font-size: 16px;
+  }
+}

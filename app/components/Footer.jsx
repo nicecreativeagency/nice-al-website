@@ -1,59 +1,95 @@
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { motion, useInView } from 'framer-motion'
+import Marquee from './Marquee'
 import styles from './Footer.module.css'
 
 const SOCIALS = [
   { label: 'Instagram', url: 'https://instagram.com/nice.al' },
   { label: 'Behance', url: 'https://behance.net/niceal' },
   { label: 'Dribbble', url: 'https://dribbble.com/niceal' },
+  { label: 'LinkedIn', url: 'https://linkedin.com/company/niceal' },
 ]
+
+const NAV = [
+  { label: 'Work', href: '#work' },
+  { label: 'What we do', href: '#capabilities' },
+  { label: 'About', href: '#about' },
+  { label: 'Products', href: '#products' },
+]
+
+function useLocalTime() {
+  const [time, setTime] = useState('')
+  useEffect(() => {
+    const update = () => {
+      const t = new Intl.DateTimeFormat('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        timeZone: 'Europe/Tirane',
+      }).format(new Date())
+      setTime(t)
+    }
+    update()
+    const id = setInterval(update, 1000)
+    return () => clearInterval(id)
+  }, [])
+  return time
+}
 
 export default function Footer() {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-10%' })
+  const time = useLocalTime()
 
   return (
-    <footer className={styles.footer} id="contact" ref={ref}>
-      <div className={styles.gridOverlay}>
-        <svg viewBox="0 0 300 300" preserveAspectRatio="none" className={styles.gridSvg}>
-          <line x1="100" y1="0" x2="100" y2="300" stroke="#fff" strokeWidth="0.5" opacity="0.06" />
-          <line x1="200" y1="0" x2="200" y2="300" stroke="#fff" strokeWidth="0.5" opacity="0.06" />
-          <line x1="0" y1="100" x2="300" y2="100" stroke="#fff" strokeWidth="0.5" opacity="0.06" />
-          <line x1="0" y1="200" x2="300" y2="200" stroke="#fff" strokeWidth="0.5" opacity="0.06" />
-        </svg>
-      </div>
-
-      <motion.div
-        className={styles.top}
-        initial={{ opacity: 0, y: 40 }}
-        animate={inView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-      >
-        <div className={styles.cta}>
-          <span className={styles.label}>Get in touch</span>
-          <a href="mailto:hello@nice.al" className={styles.email}>
-            hello@nice.al
-          </a>
+    <footer className={styles.footer} ref={ref}>
+      <a href="#contact" className={styles.marqueeLink} data-cursor="view" data-cursor-label="Say hi">
+        <div className={styles.marquee}>
+          <Marquee
+            items={["Let's make something nice", "Let's make something nice"]}
+            speed={22}
+            separator="✳"
+          />
         </div>
+      </a>
 
-        <div className={styles.socialList}>
-          {SOCIALS.map((s) => (
-            <a
-              key={s.label}
-              href={s.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.socialLink}
-            >
-              {s.label}
+      <div className={styles.body}>
+        <motion.div
+          className={styles.top}
+          initial={{ opacity: 0, y: 30 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className={styles.cta}>
+            <span className={styles.label}>Get in touch</span>
+            <a href="mailto:hello@nice.al" className={styles.email} data-cursor="hover">
+              hello@nice.al
             </a>
-          ))}
-        </div>
-      </motion.div>
+          </div>
 
-      <div className={styles.bottom}>
-        <div className={styles.bottomLeft}>
-          <svg viewBox="0 0 575.91 191.09" className={styles.footerLogo}>
+          <div className={styles.cols}>
+            <div className={styles.col}>
+              <span className={styles.colTitle}>Menu</span>
+              {NAV.map((n) => (
+                <a key={n.label} href={n.href} className={styles.colLink} data-cursor="hover">{n.label}</a>
+              ))}
+            </div>
+            <div className={styles.col}>
+              <span className={styles.colTitle}>Social</span>
+              {SOCIALS.map((s) => (
+                <a key={s.label} href={s.url} target="_blank" rel="noopener noreferrer" className={styles.colLink} data-cursor="hover">{s.label}</a>
+              ))}
+            </div>
+            <div className={styles.col}>
+              <span className={styles.colTitle}>Local time</span>
+              <span className={styles.clock}>{time}</span>
+              <span className={styles.place}>Tirana, AL</span>
+            </div>
+          </div>
+        </motion.div>
+
+        <div className={styles.bottom}>
+          <svg viewBox="0 0 575.91 191.09" className={styles.logo}>
             <rect y="0" width="191.09" height="191.09" rx="29.18" ry="29.18" fill="#fff"/>
             <g opacity="0.2">
               <path fill="#000" d="M191.09,48.4v-1.18h-47.22V0h-1.18v47.22h-46.56V0h-1.18v47.22h-46.56V0h-1.18v47.22H0v1.18h47.22v46.56H0v1.18h47.22v46.56H0v1.18h47.22v47.22h1.18v-47.22h46.56v47.22h1.18v-47.22h46.56v47.22h1.18v-47.22h47.22v-1.18h-47.22v-46.56h47.22v-1.18h-47.22v-46.56h47.22ZM48.4,48.4h46.56v46.56h-46.56v-46.56ZM48.4,142.69v-46.56h46.56v46.56h-46.56ZM142.69,142.69h-46.56v-46.56h46.56v46.56ZM142.69,94.96h-46.56v-46.56h46.56v46.56Z"/>
@@ -67,8 +103,9 @@ export default function Footer() {
             <path fill="#fff" d="M508.17,134.17c-4.22,0-7.69-1.33-10.41-4-2.72-2.66-4.07-6.21-4.07-10.63s1.36-8.42,4.07-12.29c2.71-3.87,6.44-7.37,11.16-10.49,4.73-3.12,10.11-5.63,16.14-7.54,1.31-.4,1.96-1.26,1.96-2.56v-13.73c0-4.83-.75-8.27-2.26-10.33-1.51-2.06-3.57-3.09-6.19-3.09s-4.8,1.13-6.86,3.39c-2.06,2.26-3.55,6.06-4.45,11.39-.5,3.22-1.58,5.56-3.24,7.01-1.66,1.46-3.34,2.19-5.05,2.19-2.82,0-4.22-1.41-4.22-4.22s.83-5.81,2.49-8.67c1.66-2.87,3.85-5.48,6.56-7.85,2.72-2.36,5.68-4.25,8.9-5.66,3.22-1.41,6.44-2.11,9.66-2.11,9.96,0,14.94,5.79,14.94,17.35v46.16c0,4.22,1.06,6.34,3.17,6.34,1.31,0,2.51-.88,3.62-2.64,1.11-1.76,1.66-4.75,1.66-8.98,0-1.61.65-2.41,1.96-2.41,1.21,0,1.81.86,1.81,2.56,0,7.34-1.28,12.65-3.85,15.92-2.56,3.27-5.46,4.9-8.67,4.9-2.41,0-4.33-.98-5.73-2.94-1.41-1.96-2.37-4.3-2.87-7.02-.1-1-.53-1.53-1.28-1.58-.75-.05-1.49.43-2.19,1.43-2.41,3.32-4.88,5.83-7.39,7.54-2.52,1.71-5.63,2.56-9.35,2.56ZM512.24,127.23c2.61,0,5.03-.93,7.24-2.79,2.21-1.86,4.02-4.35,5.43-7.47,1.41-3.12,2.11-6.64,2.11-10.56v-11.01c0-1.91-1.06-2.46-3.17-1.66-6.14,2.21-10.89,5.26-14.26,9.13-3.37,3.87-5.05,8.52-5.05,13.96,0,6.94,2.56,10.41,7.69,10.41Z"/>
             <path fill="#fff" d="M547.24,132.81c-1.21,0-1.81-.55-1.81-1.66,0-1.01.55-1.61,1.66-1.81l2.11-.3c2.11-.3,3.67-.9,4.68-1.81,1-.9,1.51-2.41,1.51-4.53V36.26c0-1.81-.28-3.07-.83-3.77-.55-.7-1.54-1.11-2.94-1.21l-3.47-.45c-1.11-.2-1.66-.8-1.66-1.81s.55-1.61,1.66-1.81c2.81-.6,5.23-1.31,7.24-2.11,2.01-.8,3.67-1.61,4.98-2.41,1.61-1,2.81-1.51,3.62-1.51,1.11,0,1.66.81,1.66,2.41v99.12c0,2.11.33,3.6.98,4.45.65.86,2.04,1.43,4.15,1.73l3.47.45c1.11.2,1.66.8,1.66,1.81,0,1.11-.6,1.66-1.81,1.66h-26.85Z"/>
           </svg>
+
+          <p className={styles.copy}>&copy; 2017&ndash;2026 NICE.al — Made with care by two.</p>
         </div>
-        <p className={styles.copy}>&copy; 2017&ndash;2026 NICE.al. All rights reserved.</p>
       </div>
     </footer>
   )

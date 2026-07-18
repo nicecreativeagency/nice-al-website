@@ -44,6 +44,16 @@ img, svg {
   color: #000;
 }
 
+body.has-custom-cursor,
+body.has-custom-cursor * {
+  cursor: none;
+}
+
+body.has-custom-cursor input,
+body.has-custom-cursor textarea {
+  cursor: text;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
 }
