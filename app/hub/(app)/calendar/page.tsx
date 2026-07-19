@@ -1,10 +1,11 @@
 import Link from 'next/link'
 import { and, asc, eq, inArray } from 'drizzle-orm'
 import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react'
+import { PageHeader } from '@/app/hub/components/page-header'
 import { requireViewer } from '@/lib/dal'
 import { db } from '@/lib/db'
 import { client, contentItem, contentPlatformTarget } from '@/lib/db/schema'
-import { PageHeader } from '@/app/hub/components/page-header'
+import { CalendarBoard, type CalendarItem } from './calendar-board'
 
 type View = 'month' | 'week' | 'list'
 
@@ -80,6 +81,18 @@ export default async function CalendarPage({
     }, new Map<string, (typeof rows)[number] & { platforms: string[] }>()),
   ).map(([, item]) => item)
 
+  const calendarItems: CalendarItem[] = items.map((item) => ({
+    id: item.id,
+    title: item.title,
+    status: item.status,
+    scheduledDate: item.scheduledDate,
+    scheduledTime: item.scheduledTime,
+    clientId: item.clientId,
+    clientName: item.clientName,
+    clientColor: item.clientColor,
+    platforms: item.platforms,
+  }))
+
   const [year, month] = selectedMonth.split('-').map(Number)
   const first = new Date(Date.UTC(year, month - 1, 1))
   const gridStart = new Date(first)
@@ -89,6 +102,17 @@ export default async function CalendarPage({
     date.setUTCDate(gridStart.getUTCDate() + index)
     return date
   })
+  const calendarDays = days.map((day) => ({
+    date: day.toISOString().slice(0, 10),
+    dayNumber: day.getUTCDate(),
+    label: day.toLocaleDateString('en-GB', {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+      timeZone: 'UTC',
+    }),
+    outside: day.getUTCMonth() !== month - 1,
+  }))
   const monthItems = items.filter((item) =>
     item.scheduledDate?.startsWith(selectedMonth),
   )
@@ -108,9 +132,9 @@ export default async function CalendarPage({
   return (
     <div className="hubPage">
       <PageHeader
+        description="All planned content, approvals and publishing dates in one place."
         eyebrow="Publishing plan"
         title="Calendar"
-        description="All planned content, approvals and publishing dates in one place."
       />
       {viewer.role !== 'client' ? (
         <section className="calendarClientSwitcher">
@@ -124,9 +148,9 @@ export default async function CalendarPage({
             </Link>
             {viewer.clients.map((item) => (
               <Link
-                key={item.id}
                 className={requestedClient === item.id ? 'active' : ''}
                 href={query({ client: item.id })}
+                key={item.id}
               >
                 <i style={{ backgroundColor: item.brandColor }} />
                 {item.name}
@@ -137,26 +161,44 @@ export default async function CalendarPage({
       ) : null}
       <section className="calendarToolbar">
         <div className="calendarPeriod">
-          <Link href={query({ month: shiftMonth(selectedMonth, -1) })} aria-label="Previous month">
+          <Link
+            aria-label="Previous month"
+            href={query({ month: shiftMonth(selectedMonth, -1) })}
+          >
             <ChevronLeft size={17} />
           </Link>
           <strong>{title}</strong>
-          <Link href={query({ month: shiftMonth(selectedMonth, 1) })} aria-label="Next month">
+          <Link
+            aria-label="Next month"
+            href={query({ month: shiftMonth(selectedMonth, 1) })}
+          >
             <ChevronRight size={17} />
           </Link>
         </div>
         <form>
-          <input type="hidden" name="view" value={view} />
-          <input type="hidden" name="month" value={selectedMonth} />
-          <select name="client" defaultValue={requestedClient} aria-label="Filter by client">
+          <input name="view" type="hidden" value={view} />
+          <input name="month" type="hidden" value={selectedMonth} />
+          <select
+            aria-label="Filter by client"
+            defaultValue={requestedClient}
+            name="client"
+          >
             <option value="">All clients</option>
-            {viewer.clients.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}
+            {viewer.clients.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.name}
+              </option>
+            ))}
           </select>
           <button type="submit">Filter</button>
         </form>
         <nav aria-label="Calendar view">
           {(['month', 'week', 'list'] as View[]).map((item) => (
-            <Link className={view === item ? 'active' : ''} href={query({ view: item })} key={item}>
+            <Link
+              className={view === item ? 'active' : ''}
+              href={query({ view: item })}
+              key={item}
+            >
               {item}
             </Link>
           ))}
@@ -164,70 +206,59 @@ export default async function CalendarPage({
       </section>
 
       {view === 'month' ? (
-        <section className="calendarMonth">
-          {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => <strong key={day}>{day}</strong>)}
-          {days.map((day) => {
-            const date = day.toISOString().slice(0, 10)
-            const dayItems = items.filter((item) => item.scheduledDate === date)
-            return (
-              <div className={day.getUTCMonth() === month - 1 ? '' : 'outside'} key={date}>
-                <time>{day.getUTCDate()}</time>
-                {dayItems.slice(0, 4).map((item) => (
-                  <Link href={viewer.role === 'client' ? '/hub/approvals' : `/hub/content/${item.id}`} key={item.id} style={{ borderLeftColor: item.clientColor }}>
-                    <small>{item.scheduledTime?.slice(0, 5) ?? 'Any time'} · {item.clientName}</small>
-                    <span>{item.title}</span>
-                  </Link>
-                ))}
-                {dayItems.length > 4 ? <em>+{dayItems.length - 4} more</em> : null}
-              </div>
-            )
-          })}
-        </section>
+        <CalendarBoard
+          days={calendarDays}
+          editable={viewer.role !== 'client'}
+          initialItems={calendarItems}
+        />
       ) : view === 'week' ? (
-        <section className="calendarMonth calendarWeek">
-          {days.slice(0, 7).map((day) => {
-            const date = day.toISOString().slice(0, 10)
-            const dayItems = items.filter((item) => item.scheduledDate === date)
-            return (
-              <div key={date}>
-                <time>
-                  {day.toLocaleDateString('en-GB', {
-                    weekday: 'short',
-                    day: 'numeric',
-                    month: 'short',
-                    timeZone: 'UTC',
-                  })}
-                </time>
-                {dayItems.map((item) => (
-                  <Link
-                    href={viewer.role === 'client' ? '/hub/approvals' : `/hub/content/${item.id}`}
-                    key={item.id}
-                    style={{ borderLeftColor: item.clientColor }}
-                  >
-                    <small>{item.scheduledTime?.slice(0, 5) ?? 'Any time'} · {item.clientName}</small>
-                    <span>{item.title}</span>
-                  </Link>
-                ))}
-              </div>
-            )
-          })}
-        </section>
+        <CalendarBoard
+          days={calendarDays.slice(0, 7)}
+          editable={viewer.role !== 'client'}
+          initialItems={calendarItems}
+          week
+        />
       ) : (
         <section className="calendarList">
           {monthItems.length === 0 ? (
             <div className="contentEmpty">
-              <span><CalendarDays size={22} /></span>
+              <span>
+                <CalendarDays size={22} />
+              </span>
               <h2>No planned content</h2>
               <p>Content with a date in {title} will appear here.</p>
             </div>
-          ) : monthItems.map((item) => (
-            <Link href={viewer.role === 'client' ? '/hub/approvals' : `/hub/content/${item.id}`} key={item.id}>
-              <time>{item.scheduledDate}<small>{item.scheduledTime?.slice(0, 5) ?? 'Time not set'}</small></time>
-              <i style={{ background: item.clientColor }}>{item.clientName.charAt(0)}</i>
-              <span><small>{item.clientName} · {item.platforms.join(', ')}</small><strong>{item.title}</strong></span>
-              <em className={`contentStatus is-${item.status}`}>{item.status.replaceAll('_', ' ')}</em>
-            </Link>
-          ))}
+          ) : (
+            monthItems.map((item) => (
+              <Link
+                href={
+                  viewer.role === 'client'
+                    ? '/hub/approvals'
+                    : `/hub/content/${item.id}`
+                }
+                key={item.id}
+              >
+                <time>
+                  {item.scheduledDate}
+                  <small>
+                    {item.scheduledTime?.slice(0, 5) ?? 'Time not set'}
+                  </small>
+                </time>
+                <i style={{ background: item.clientColor }}>
+                  {item.clientName.charAt(0)}
+                </i>
+                <span>
+                  <small>
+                    {item.clientName} · {item.platforms.join(', ')}
+                  </small>
+                  <strong>{item.title}</strong>
+                </span>
+                <em className={`contentStatus is-${item.status}`}>
+                  {item.status.replaceAll('_', ' ')}
+                </em>
+              </Link>
+            ))
+          )}
         </section>
       )}
     </div>

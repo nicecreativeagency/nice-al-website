@@ -232,6 +232,9 @@ The pre-publishing workflow now includes:
     expire after 30 days and revoke the previous campaign link when replaced.
 18. Campaign reviewers can approve or request changes item by item, leave
     comments, or approve every remaining item in one action.
+19. Admin calendar cards can be rescheduled with drag-and-drop or an accessible
+    date picker, with server-side organization checks and activity history.
+    Client calendars remain read-only.
 
 ## Monochrome workflow refinement
 
