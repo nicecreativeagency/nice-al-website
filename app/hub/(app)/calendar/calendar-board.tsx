@@ -92,7 +92,10 @@ function ContentCard({
         ) : null}
         <Link href={editable ? `/hub/content/${item.id}` : '/hub/approvals'}>
           <small>
-            {item.scheduledTime?.slice(0, 5) ?? 'Any time'} · {item.clientName}
+            {item.scheduledDate
+              ? (item.scheduledTime?.slice(0, 5) ?? 'Any time')
+              : 'Unscheduled'}{' '}
+            · {item.clientName}
           </small>
           <span>{item.title}</span>
         </Link>
@@ -100,10 +103,16 @@ function ContentCard({
           movable ? (
             <button
               aria-expanded={open}
-              aria-label={`Move ${item.title} to another date`}
+              aria-label={
+                item.scheduledDate
+                  ? `Move ${item.title} to another date`
+                  : `Schedule ${item.title}`
+              }
               className="calendarMoveButton"
               onClick={() => setOpen((value) => !value)}
-              title="Move to another date"
+              title={
+                item.scheduledDate ? 'Move to another date' : 'Choose a date'
+              }
               type="button"
             >
               <CalendarClock size={14} />
@@ -122,7 +131,7 @@ function ContentCard({
       {movable && open ? (
         <form className="calendarMoveForm" onSubmit={submitMove}>
           <label>
-            <span>New date</span>
+            <span>{item.scheduledDate ? 'New date' : 'Publishing date'}</span>
             <input
               aria-label={`New publishing date for ${item.title}`}
               name="scheduledDate"
@@ -134,7 +143,11 @@ function ContentCard({
           </label>
           <button disabled={busyId === item.id} type="submit">
             <MoveRight size={13} />
-            {busyId === item.id ? 'Moving…' : 'Move'}
+            {busyId === item.id
+              ? 'Saving…'
+              : item.scheduledDate
+                ? 'Move'
+                : 'Schedule'}
           </button>
         </form>
       ) : null}
@@ -186,7 +199,11 @@ export function CalendarBoard({
       )
       setMessage(result.error)
     } else {
-      setMessage(`${item.title} moved to ${date}.`)
+      setMessage(
+        item.scheduledDate
+          ? `${item.title} moved to ${date}.`
+          : `${item.title} scheduled for ${date}.`,
+      )
     }
     setBusyId(null)
     return result
@@ -221,9 +238,50 @@ export function CalendarBoard({
 
   return (
     <>
+      {editable ? (
+        <section className="calendarBacklog">
+          <header>
+            <div>
+              <strong>Unscheduled content</strong>
+              <span>
+                Drag unfinished planning directly into the calendar.
+              </span>
+            </div>
+            <em>{items.filter((item) => !item.scheduledDate).length}</em>
+          </header>
+          {items.some((item) => !item.scheduledDate) ? (
+            <div className="calendarBacklogCards">
+              {items
+                .filter((item) => !item.scheduledDate)
+                .map((item) => (
+                  <ContentCard
+                    busyId={busyId}
+                    editable={editable}
+                    item={item}
+                    key={item.id}
+                    onDragEnd={() => {
+                      setDraggedId(null)
+                      setDropDate(null)
+                    }}
+                    onDragStart={startDrag}
+                    onMove={moveItem}
+                  />
+                ))}
+            </div>
+          ) : (
+            <p>Everything in this workspace already has a publishing date.</p>
+          )}
+        </section>
+      ) : null}
       <div className="calendarBoardNotice" aria-live="polite">
         {message ? (
-          <span className={message.includes('moved to') ? 'is-success' : 'is-error'}>
+          <span
+            className={
+              message.includes('moved to') || message.includes('scheduled for')
+                ? 'is-success'
+                : 'is-error'
+            }
+          >
             {message}
           </span>
         ) : editable ? (

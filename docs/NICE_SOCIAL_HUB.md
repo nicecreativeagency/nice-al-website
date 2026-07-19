@@ -235,6 +235,8 @@ The pre-publishing workflow now includes:
 19. Admin calendar cards can be rescheduled with drag-and-drop or an accessible
     date picker, with server-side organization checks and activity history.
     Client calendars remain read-only.
+20. Unscheduled drafts appear in an admin planning backlog and can be dragged
+    directly onto a calendar day or scheduled with the same date-picker flow.
 
 ## Monochrome workflow refinement
 

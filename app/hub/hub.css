@@ -2624,6 +2624,67 @@
   box-shadow: inset 0 0 0 3px #000;
 }
 
+.calendarBacklog {
+  background: #000;
+  border: 1px solid #000;
+  color: #fff;
+  padding: 14px;
+}
+
+.calendarBacklog > header {
+  align-items: center;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+}
+
+.calendarBacklog > header > div {
+  display: grid;
+  gap: 3px;
+}
+
+.calendarBacklog > header strong {
+  font-size: 14px;
+}
+
+.calendarBacklog > header span,
+.calendarBacklog > p {
+  color: #aaa;
+  font-size: 10px;
+  margin: 0;
+}
+
+.calendarBacklog > header em {
+  align-items: center;
+  background: #fff;
+  border-radius: 999px;
+  color: #000;
+  display: inline-flex;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 850;
+  height: 28px;
+  justify-content: center;
+  min-width: 28px;
+}
+
+.calendarBacklogCards {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: 12px;
+}
+
+.calendarBacklog .calendarContentCard {
+  background: #fff;
+  color: #000;
+  margin: 0;
+}
+
+.calendarBacklog > p {
+  padding-top: 10px;
+}
+
 .calendarBoardNotice {
   align-items: center;
   background: #fff;
@@ -2797,6 +2858,18 @@
 
   .calendarWeek > div.outside {
     display: block;
+  }
+
+  .calendarBacklogCards {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 5px;
+    scroll-snap-type: x proximity;
+  }
+
+  .calendarBacklogCards .calendarContentCard {
+    flex: 0 0 min(82vw, 310px);
+    scroll-snap-align: start;
   }
 
   .calendarMonth > div {
