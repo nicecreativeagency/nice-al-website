@@ -773,7 +773,12 @@
   cursor: pointer;
 }
 
-.colorField input[readonly] {
+.colorField input[type='text'] {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  text-transform: lowercase;
+}
+
+.colorField input[type='text']::placeholder {
   color: #777770;
 }
 

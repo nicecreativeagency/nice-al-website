@@ -12,6 +12,9 @@ const initialState: CreateClientState = {}
 export function NewClientDialog() {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const [brandColor, setBrandColor] = useState('#ff5a36')
+  const pickerColor = /^#[0-9a-fA-F]{6}$/.test(brandColor)
+    ? brandColor
+    : '#ff5a36'
   const [state, formAction, isPending] = useActionState(
     createClientAction,
     initialState,
@@ -78,26 +81,32 @@ export function NewClientDialog() {
               <span>Brand color</span>
               <div className="colorField">
                 <input
-                  name="brandColor"
                   type="color"
-                  value={brandColor}
+                  value={pickerColor}
                   onChange={(event) => setBrandColor(event.target.value)}
                   aria-label="Brand color"
                 />
                 <input
-                  name="brandColorPreview"
+                  name="brandColor"
                   value={brandColor}
-                  readOnly
-                  tabIndex={-1}
-                  aria-hidden="true"
+                  onChange={(event) => setBrandColor(event.target.value)}
+                  placeholder="#ff5a36"
+                  maxLength={7}
+                  autoComplete="off"
+                  spellCheck={false}
+                  aria-label="Brand color HEX code"
+                  aria-invalid={Boolean(state.fields?.brandColor)}
                 />
               </div>
+              {state.fields?.brandColor?.[0] && (
+                <small>{state.fields.brandColor[0]}</small>
+              )}
             </label>
 
             <label>
               <span>Timezone</span>
               <select name="timezone" defaultValue="Europe/Belgrade">
-                <option value="Europe/Belgrade">Kosovo / Belgrade</option>
+                <option value="Europe/Belgrade">Republic of Kosova</option>
                 <option value="Europe/Tirane">Tirana</option>
                 <option value="Europe/Berlin">Berlin</option>
                 <option value="Europe/London">London</option>
