@@ -20,9 +20,10 @@ The public NICE website is preserved. Its navigation now includes a
 - Organization-first database model.
 - Server-side role and client-membership checks.
 - Separate Admin and Client navigation.
-- Admin-only `/hub/clients` route with safe client redirect.
+- Admin-only client directory with workspace creation and editing.
+- Database-backed content drafts with client ownership and platform targets.
 - Local PGlite development database and Neon PostgreSQL production driver.
-- Initial route placeholders for the planned product milestones.
+- Initial route placeholders for the remaining product milestones.
 
 Direct Facebook, Instagram and LinkedIn integrations are intentionally not part
 of this milestone.
@@ -62,6 +63,8 @@ The first schema contains:
 - `organization_members`
 - `clients`
 - `client_members`
+- `content_items`
+- `content_platform_targets`
 
 Foreign keys use cascading deletion for dependent memberships and auth data.
 Organization/client slugs and memberships have unique constraints and query
@@ -106,8 +109,9 @@ full client list.
 | `/hub` | Public redirect | Login or role dashboard |
 | `/hub/login` | Public | Invite-only sign in |
 | `/hub/dashboard` | Authenticated | Role-specific overview |
-| `/hub/clients` | Admin only | Organization client directory |
-| `/hub/content` | Admin only | Milestone placeholder |
+| `/hub/clients` | Admin only | Create and list organization clients |
+| `/hub/clients/[clientId]` | Admin only | Edit an organization client workspace |
+| `/hub/content` | Admin only | Create and list content drafts |
 | `/hub/campaigns` | Admin only | Milestone placeholder |
 | `/hub/media` | Admin only | Milestone placeholder |
 | `/hub/social-accounts` | Admin only | Future OAuth placeholder |
@@ -181,10 +185,9 @@ Development seed accounts are not intended for production.
 
 ## Next milestones
 
-1. Client creation and editing.
-2. Content items, platform targets, versions and media.
-3. Approval requests, comments and guest review links.
-4. Month/week/list calendar.
-5. Cloudinary media storage and email notifications.
-6. Meta OAuth and publishing adapters.
-7. LinkedIn connection and publishing after API access approval.
+1. Content editing, platform-specific captions, versions and media.
+2. Approval requests, comments and guest review links.
+3. Month/week/list calendar.
+4. Cloudinary media storage and email notifications.
+5. Meta OAuth and publishing adapters.
+6. LinkedIn connection and publishing after API access approval.

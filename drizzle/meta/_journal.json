@@ -8,6 +8,13 @@
       "when": 1784422800000,
       "tag": "0000_nice_social_hub",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1784429895296,
+      "tag": "0001_glossy_wendell_vaughn",
+      "breakpoints": true
     }
   ]
 }

@@ -1,8 +1,10 @@
 import {
   boolean,
+  date,
   index,
   pgTable,
   text,
+  time,
   timestamp,
   uniqueIndex,
 } from 'drizzle-orm/pg-core'
@@ -143,6 +145,59 @@ export const clientMember = pgTable(
   ],
 )
 
+export const contentItem = pgTable(
+  'content_items',
+  {
+    id: text('id').primaryKey(),
+    organizationId: text('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    clientId: text('client_id')
+      .notNull()
+      .references(() => client.id, { onDelete: 'restrict' }),
+    createdByUserId: text('created_by_user_id').references(() => user.id, {
+      onDelete: 'set null',
+    }),
+    title: text('title').notNull(),
+    contentType: text('content_type').default('image_post').notNull(),
+    status: text('status').default('draft').notNull(),
+    caption: text('caption').default('').notNull(),
+    scheduledDate: date('scheduled_date'),
+    scheduledTime: time('scheduled_time'),
+    timezone: text('timezone').notNull(),
+    ...timestamps,
+  },
+  (table) => [
+    index('content_items_organization_id_idx').on(table.organizationId),
+    index('content_items_client_id_idx').on(table.clientId),
+    index('content_items_status_idx').on(table.organizationId, table.status),
+    index('content_items_schedule_idx').on(
+      table.organizationId,
+      table.scheduledDate,
+    ),
+  ],
+)
+
+export const contentPlatformTarget = pgTable(
+  'content_platform_targets',
+  {
+    id: text('id').primaryKey(),
+    contentItemId: text('content_item_id')
+      .notNull()
+      .references(() => contentItem.id, { onDelete: 'cascade' }),
+    platform: text('platform').notNull(),
+    caption: text('caption'),
+    ...timestamps,
+  },
+  (table) => [
+    uniqueIndex('content_platform_targets_item_platform_idx').on(
+      table.contentItemId,
+      table.platform,
+    ),
+    index('content_platform_targets_item_id_idx').on(table.contentItemId),
+  ],
+)
+
 export const schema = {
   user,
   session,
@@ -152,6 +207,25 @@ export const schema = {
   organizationMember,
   client,
   clientMember,
+  contentItem,
+  contentPlatformTarget,
 }
 
 export type Role = 'super_admin' | 'organization_admin' | 'team_member' | 'client'
+export type ContentStatus =
+  | 'draft'
+  | 'waiting_approval'
+  | 'changes_requested'
+  | 'approved'
+  | 'ready_to_schedule'
+  | 'scheduled'
+  | 'published'
+  | 'failed'
+  | 'archived'
+export type ContentType =
+  | 'image_post'
+  | 'carousel'
+  | 'video'
+  | 'reel'
+  | 'story'
+export type SocialPlatform = 'facebook' | 'instagram' | 'linkedin'
