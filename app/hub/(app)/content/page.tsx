@@ -59,6 +59,7 @@ export default async function ContentPage({
     bulk?: string
     bulkAction?: string
     bulkError?: string
+    create?: string
   }>
 }) {
   const viewer = await requireAdmin()
@@ -169,7 +170,11 @@ export default async function ContentPage({
         title="Content"
         description="Create and prepare content for every client and social channel."
         action={
-          <NewContentDialog clients={viewer.clients} campaigns={campaigns} />
+          <NewContentDialog
+            campaigns={campaigns}
+            clients={viewer.clients}
+            initiallyOpen={filters.create === '1'}
+          />
         }
       />
 

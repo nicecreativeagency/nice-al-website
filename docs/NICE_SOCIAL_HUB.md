@@ -237,6 +237,10 @@ The pre-publishing workflow now includes:
     Client calendars remain read-only.
 20. Unscheduled drafts appear in an admin planning backlog and can be dragged
     directly onto a calendar day or scheduled with the same date-picker flow.
+21. A global `Ctrl/Cmd + K` command palette provides fast navigation, a
+    one-step content-creation shortcut and organization-scoped search across
+    clients, campaigns and content. Client users receive navigation-only
+    results.
 
 ## Monochrome workflow refinement
 

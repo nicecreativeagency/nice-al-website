@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -15,6 +15,7 @@ import {
   LogOut,
   Megaphone,
   Menu,
+  Search,
   Settings,
   Share2,
   UsersRound,
@@ -23,6 +24,7 @@ import {
 } from 'lucide-react'
 import type { Viewer } from '@/lib/dal'
 import { signOutAction } from '@/app/hub/actions'
+import { CommandPalette } from '@/app/hub/components/command-palette'
 
 type NavigationItem = {
   label: string
@@ -57,6 +59,10 @@ export function HubShell({
 }) {
   const pathname = usePathname()
   const [isMobileOpen, setIsMobileOpen] = useState(false)
+  const [isCommandOpen, setIsCommandOpen] = useState(false)
+  const setCommandOpen = useCallback((open: boolean) => {
+    setIsCommandOpen(open)
+  }, [])
   const isAdmin = viewer.role !== 'client'
   const navigation = isAdmin ? adminNavigation : clientNavigation
   const initials = viewer.user.name
@@ -72,13 +78,22 @@ export function HubShell({
           <Image src="/nice-al-symbol.svg" alt="" width={28} height={28} />
           <span>Social Hub</span>
         </Link>
-        <button
-          type="button"
-          onClick={() => setIsMobileOpen(true)}
-          aria-label="Open navigation"
-        >
-          <Menu size={22} aria-hidden="true" />
-        </button>
+        <div>
+          <button
+            aria-label="Search Social Hub"
+            onClick={() => setIsCommandOpen(true)}
+            type="button"
+          >
+            <Search aria-hidden="true" size={20} />
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsMobileOpen(true)}
+            aria-label="Open navigation"
+          >
+            <Menu size={22} aria-hidden="true" />
+          </button>
+        </div>
       </header>
 
       {isMobileOpen ? (
@@ -123,6 +138,19 @@ export function HubShell({
           </span>
           <ChevronDown size={15} aria-hidden="true" />
         </div>
+
+        <button
+          className="hubCommandTrigger"
+          onClick={() => {
+            setIsMobileOpen(false)
+            setIsCommandOpen(true)
+          }}
+          type="button"
+        >
+          <Search aria-hidden="true" size={16} />
+          <span>Search</span>
+          <kbd>Ctrl K</kbd>
+        </button>
 
         <nav className="hubNavigation" aria-label="Social Hub navigation">
           <p>Workspace</p>
@@ -177,6 +205,12 @@ export function HubShell({
       </aside>
 
       <main className="hubMain">{children}</main>
+      <CommandPalette
+        isAdmin={isAdmin}
+        navigation={navigation.map(({ label, href }) => ({ label, href }))}
+        onOpenChange={setCommandOpen}
+        open={isCommandOpen}
+      />
     </div>
   )
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useRef } from 'react'
+import { useActionState, useEffect, useRef } from 'react'
 import { Plus, X } from 'lucide-react'
 import {
   CONTENT_TYPE_OPTIONS,
@@ -27,15 +27,23 @@ const initialState: CreateContentState = {}
 export function NewContentDialog({
   clients,
   campaigns,
+  initiallyOpen = false,
 }: {
   clients: ClientOption[]
   campaigns: CampaignOption[]
+  initiallyOpen?: boolean
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const [state, formAction, isPending] = useActionState(
     createContentAction,
     initialState,
   )
+
+  useEffect(() => {
+    if (initiallyOpen && clients.length > 0) {
+      dialogRef.current?.showModal()
+    }
+  }, [clients.length, initiallyOpen])
 
   return (
     <>
