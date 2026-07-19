@@ -1203,6 +1203,198 @@
   background: rgba(255, 255, 255, 0.78);
 }
 
+.contentMediaPanel {
+  margin-bottom: 24px;
+  overflow: hidden;
+  border: 1px solid var(--hub-line);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.contentMediaHeading {
+  min-height: 78px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--hub-line);
+}
+
+.contentMediaHeading > div {
+  display: grid;
+  gap: 3px;
+}
+
+.contentMediaHeading p {
+  margin: 0;
+  color: var(--hub-ink);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.contentMediaHeading span {
+  color: #92928a;
+  font-size: 9px;
+}
+
+.contentMediaHeading > label {
+  min-height: 39px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 14px;
+  border-radius: 8px;
+  background: var(--hub-ink);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.contentMediaHeading > label.isDisabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+.contentMediaHeading input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.contentMediaPanel > p {
+  margin: 14px 20px 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #eef4ed;
+  color: #497052;
+  font-size: 9px;
+}
+
+.contentMediaPanel > p.isError {
+  background: #fff3f0;
+  color: #a83924;
+}
+
+.contentMediaEmpty {
+  min-height: 150px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 10px;
+  padding: 30px;
+  color: #9a9a92;
+}
+
+.contentMediaEmpty span {
+  font-size: 9px;
+}
+
+.contentMediaGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  padding: 18px;
+}
+
+.contentMediaGrid > article {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--hub-line);
+  border-radius: 11px;
+  background: white;
+}
+
+.contentMediaPreview {
+  aspect-ratio: 4 / 3;
+  position: relative;
+  overflow: hidden;
+  background: #ecece7;
+}
+
+.contentMediaPreview img,
+.contentMediaPreview video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.contentMediaPreview > span {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 7px;
+  border-radius: 6px;
+  background: rgba(20, 20, 17, 0.72);
+  color: white;
+  font-size: 7px;
+  font-weight: 750;
+  backdrop-filter: blur(7px);
+}
+
+.contentMediaMeta {
+  min-height: 61px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 10px 9px 12px;
+}
+
+.contentMediaMeta > div {
+  min-width: 0;
+  display: grid;
+}
+
+.contentMediaMeta strong {
+  overflow: hidden;
+  color: #55554f;
+  font-size: 8px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.contentMediaMeta small {
+  overflow: hidden;
+  color: #9a9a92;
+  font-size: 7px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.contentMediaMeta button {
+  width: 29px;
+  height: 29px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #aaa9a2;
+  cursor: pointer;
+}
+
+.contentMediaMeta button:hover {
+  background: #f0f0eb;
+  color: #b44631;
+}
+
+.contentMediaMeta button:disabled {
+  cursor: wait;
+  opacity: 0.5;
+}
+
 .contentSettingsSection {
   display: grid;
   grid-template-columns: minmax(210px, 0.65fr) minmax(0, 1.35fr);
@@ -2114,6 +2306,10 @@
     gap: 22px;
   }
 
+  .contentMediaGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .directoryHeading {
     display: none;
   }
@@ -2187,6 +2383,20 @@
 
   .contentSettingsSection {
     padding: 22px;
+  }
+
+  .contentMediaHeading {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 18px;
+  }
+
+  .contentMediaHeading > label {
+    width: 100%;
+  }
+
+  .contentMediaGrid {
+    grid-template-columns: 1fr;
   }
 
   .metricGrid {

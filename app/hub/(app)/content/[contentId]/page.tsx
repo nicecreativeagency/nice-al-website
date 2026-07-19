@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { and, eq } from 'drizzle-orm'
+import { and, asc, eq } from 'drizzle-orm'
 import { ArrowLeft, CheckCircle2, FileText } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import {
@@ -10,12 +10,15 @@ import { requireAdmin } from '@/lib/dal'
 import { db } from '@/lib/db'
 import {
   client,
+  contentMedia,
   contentItem,
   contentPlatformTarget,
+  mediaAsset,
   type ContentStatus,
   type SocialPlatform,
 } from '@/lib/db/schema'
 import { EditContentForm } from '@/app/hub/(app)/content/[contentId]/edit-content-form'
+import { ContentMediaPanel } from '@/app/hub/(app)/content/[contentId]/content-media-panel'
 
 export default async function ContentWorkspacePage({
   params,
@@ -61,6 +64,23 @@ export default async function ContentWorkspacePage({
     .from(contentPlatformTarget)
     .where(eq(contentPlatformTarget.contentItemId, currentContent.id))
 
+  const attachedMedia = await db
+    .select({
+      attachmentId: contentMedia.id,
+      assetId: mediaAsset.id,
+      resourceType: mediaAsset.resourceType,
+      secureUrl: mediaAsset.secureUrl,
+      originalFilename: mediaAsset.originalFilename,
+      format: mediaAsset.format,
+      width: mediaAsset.width,
+      height: mediaAsset.height,
+      bytes: mediaAsset.bytes,
+    })
+    .from(contentMedia)
+    .innerJoin(mediaAsset, eq(mediaAsset.id, contentMedia.mediaAssetId))
+    .where(eq(contentMedia.contentItemId, currentContent.id))
+    .orderBy(asc(contentMedia.sortOrder), asc(contentMedia.createdAt))
+
   return (
     <div className="hubPage">
       <Link className="clientBackLink" href="/hub/content">
@@ -91,6 +111,8 @@ export default async function ContentWorkspacePage({
           Content changes were saved.
         </div>
       )}
+
+      <ContentMediaPanel contentId={currentContent.id} media={attachedMedia} />
 
       <EditContentForm
         clients={viewer.clients}

@@ -1,7 +1,9 @@
 import {
   boolean,
   date,
+  doublePrecision,
   index,
+  integer,
   pgTable,
   text,
   time,
@@ -198,6 +200,69 @@ export const contentPlatformTarget = pgTable(
   ],
 )
 
+export const mediaAsset = pgTable(
+  'media_assets',
+  {
+    id: text('id').primaryKey(),
+    organizationId: text('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    clientId: text('client_id')
+      .notNull()
+      .references(() => client.id, { onDelete: 'restrict' }),
+    uploadedByUserId: text('uploaded_by_user_id').references(() => user.id, {
+      onDelete: 'set null',
+    }),
+    provider: text('provider').default('cloudinary').notNull(),
+    providerAssetId: text('provider_asset_id').notNull(),
+    publicId: text('public_id').notNull(),
+    resourceType: text('resource_type').notNull(),
+    format: text('format'),
+    secureUrl: text('secure_url').notNull(),
+    originalFilename: text('original_filename'),
+    width: integer('width'),
+    height: integer('height'),
+    bytes: integer('bytes'),
+    duration: doublePrecision('duration'),
+    version: integer('version'),
+    ...timestamps,
+  },
+  (table) => [
+    uniqueIndex('media_assets_provider_asset_idx').on(
+      table.provider,
+      table.providerAssetId,
+    ),
+    index('media_assets_organization_id_idx').on(table.organizationId),
+    index('media_assets_client_id_idx').on(table.clientId),
+  ],
+)
+
+export const contentMedia = pgTable(
+  'content_media',
+  {
+    id: text('id').primaryKey(),
+    contentItemId: text('content_item_id')
+      .notNull()
+      .references(() => contentItem.id, { onDelete: 'cascade' }),
+    mediaAssetId: text('media_asset_id')
+      .notNull()
+      .references(() => mediaAsset.id, { onDelete: 'restrict' }),
+    sortOrder: integer('sort_order').default(0).notNull(),
+    altText: text('alt_text'),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    uniqueIndex('content_media_item_asset_idx').on(
+      table.contentItemId,
+      table.mediaAssetId,
+    ),
+    index('content_media_item_id_idx').on(table.contentItemId),
+    index('content_media_asset_id_idx').on(table.mediaAssetId),
+  ],
+)
+
 export const schema = {
   user,
   session,
@@ -209,6 +274,8 @@ export const schema = {
   clientMember,
   contentItem,
   contentPlatformTarget,
+  mediaAsset,
+  contentMedia,
 }
 
 export type Role = 'super_admin' | 'organization_admin' | 'team_member' | 'client'

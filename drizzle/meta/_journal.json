@@ -15,6 +15,13 @@
       "when": 1784429895296,
       "tag": "0001_glossy_wendell_vaughn",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1784432480414,
+      "tag": "0002_tearful_rictor",
+      "breakpoints": true
     }
   ]
 }

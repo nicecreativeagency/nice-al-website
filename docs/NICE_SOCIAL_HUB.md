@@ -22,6 +22,7 @@ The public NICE website is preserved. Its navigation now includes a
 - Separate Admin and Client navigation.
 - Admin-only client directory with workspace creation and editing.
 - Database-backed content drafts with client ownership and platform targets.
+- Signed image/video uploads to Cloudinary with verified response signatures.
 - Local PGlite development database and Neon PostgreSQL production driver.
 - Initial route placeholders for the remaining product milestones.
 
@@ -65,6 +66,8 @@ The first schema contains:
 - `client_members`
 - `content_items`
 - `content_platform_targets`
+- `media_assets`
+- `content_media`
 
 Foreign keys use cascading deletion for dependent memberships and auth data.
 Organization/client slugs and memberships have unique constraints and query
@@ -134,6 +137,9 @@ Create `.env.local` from `.env.example`.
 | `DATABASE_URL` | Production | Pooled Neon PostgreSQL connection |
 | `BETTER_AUTH_SECRET` | Yes | High-entropy auth secret, 32+ characters |
 | `BETTER_AUTH_URL` | Yes | `http://localhost:3002` locally; production origin when deployed |
+| `CLOUDINARY_CLOUD_NAME` | Media | Cloudinary product environment |
+| `CLOUDINARY_API_KEY` | Media | Cloudinary signed-upload key |
+| `CLOUDINARY_API_SECRET` | Media | Server-only upload signing secret |
 | `DEV_ADMIN_EMAIL` | Local seed | Admin test email |
 | `DEV_ADMIN_PASSWORD` | Local seed | Admin test password, 12+ characters |
 | `DEV_CLIENT_EMAIL` | Local seed | Client test email |
@@ -186,7 +192,7 @@ Development seed accounts are not intended for production.
 
 ## Next milestones
 
-1. Content editing, platform-specific captions, versions and media.
+1. Content versions and reusable media library.
 2. Approval requests, comments and guest review links.
 3. Month/week/list calendar.
 4. Cloudinary media storage and email notifications.
