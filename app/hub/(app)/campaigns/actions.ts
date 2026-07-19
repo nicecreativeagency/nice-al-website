@@ -1,14 +1,22 @@
 'use server'
 
-import { and, eq } from 'drizzle-orm'
+import { and, eq, isNull } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
 import { createApprovalRequestAction } from '@/app/hub/(app)/approvals/actions'
 import { recordActivity } from '@/lib/activity'
+import { createReviewToken, hashReviewToken } from '@/lib/approval-workflow'
 import { requireAdmin } from '@/lib/dal'
 import { db } from '@/lib/db'
-import { campaign, client, contentItem } from '@/lib/db/schema'
+import {
+  approvalRequest,
+  campaign,
+  campaignReviewItem,
+  campaignReviewLink,
+  client,
+  contentItem,
+} from '@/lib/db/schema'
 
 const campaignSchema = z
   .object({
@@ -191,4 +199,133 @@ export async function sendCampaignForApprovalAction(campaignId: string) {
 
   revalidatePath(`/hub/campaigns/${campaignId}`)
   redirect(`/hub/campaigns/${campaignId}?approvals=${completed}`)
+}
+
+export async function createCampaignReviewLinkAction(campaignId: string) {
+  const viewer = await requireAdmin()
+  const [ownedCampaign] = await db
+    .select({
+      id: campaign.id,
+      clientId: campaign.clientId,
+      name: campaign.name,
+    })
+    .from(campaign)
+    .where(
+      and(
+        eq(campaign.id, campaignId),
+        eq(campaign.organizationId, viewer.organization.id),
+      ),
+    )
+    .limit(1)
+  if (!ownedCampaign) {
+    return { ok: false, error: 'Campaign not found.' }
+  }
+
+  const items = await db
+    .select({
+      id: contentItem.id,
+      status: contentItem.status,
+    })
+    .from(contentItem)
+    .where(
+      and(
+        eq(contentItem.organizationId, viewer.organization.id),
+        eq(contentItem.campaignId, ownedCampaign.id),
+      ),
+    )
+    .orderBy(contentItem.scheduledDate, contentItem.createdAt)
+  const reviewable = items.filter(
+    (item) => !['archived', 'published'].includes(item.status),
+  )
+  if (!reviewable.length) {
+    return { ok: false, error: 'Add reviewable content to this campaign first.' }
+  }
+
+  const existingApprovals = await db
+    .select({
+      id: approvalRequest.id,
+      contentItemId: approvalRequest.contentItemId,
+    })
+    .from(approvalRequest)
+    .innerJoin(contentItem, eq(contentItem.id, approvalRequest.contentItemId))
+    .where(
+      and(
+        eq(approvalRequest.organizationId, viewer.organization.id),
+        eq(approvalRequest.status, 'pending'),
+        eq(contentItem.campaignId, ownedCampaign.id),
+      ),
+    )
+  const existingByContent = new Map(
+    existingApprovals.map((approval) => [
+      approval.contentItemId,
+      approval.id,
+    ]),
+  )
+  const approvalIds: string[] = []
+  for (const item of reviewable) {
+    const existingApprovalId = existingByContent.get(item.id)
+    if (existingApprovalId) {
+      approvalIds.push(existingApprovalId)
+      continue
+    }
+    const created = await createApprovalRequestAction(item.id, '')
+    if (created.ok && created.approvalId) {
+      approvalIds.push(created.approvalId)
+    }
+  }
+  if (!approvalIds.length) {
+    return {
+      ok: false,
+      error: 'No approval requests could be prepared for this campaign.',
+    }
+  }
+
+  const token = createReviewToken()
+  const linkId = crypto.randomUUID()
+  const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+  await db
+    .update(campaignReviewLink)
+    .set({ revokedAt: new Date() })
+    .where(
+      and(
+        eq(campaignReviewLink.campaignId, ownedCampaign.id),
+        eq(campaignReviewLink.organizationId, viewer.organization.id),
+        isNull(campaignReviewLink.revokedAt),
+      ),
+    )
+  await db.insert(campaignReviewLink).values({
+    id: linkId,
+    organizationId: viewer.organization.id,
+    campaignId: ownedCampaign.id,
+    tokenHash: hashReviewToken(token),
+    createdByUserId: viewer.user.id,
+    expiresAt,
+  })
+  await db.insert(campaignReviewItem).values(
+    approvalIds.map((approvalRequestId, index) => ({
+      id: crypto.randomUUID(),
+      campaignReviewLinkId: linkId,
+      approvalRequestId,
+      sortOrder: index,
+    })),
+  )
+  await recordActivity({
+    organizationId: viewer.organization.id,
+    clientId: ownedCampaign.clientId,
+    actor: { id: viewer.user.id, name: viewer.user.name },
+    action: 'campaign.review_link_created',
+    metadata: {
+      campaignId: ownedCampaign.id,
+      campaignName: ownedCampaign.name,
+      itemCount: approvalIds.length,
+    },
+  })
+
+  revalidatePath(`/hub/campaigns/${campaignId}`)
+  return {
+    ok: true,
+    token,
+    itemCount: approvalIds.length,
+    expiresAt: expiresAt.toISOString(),
+  }
 }

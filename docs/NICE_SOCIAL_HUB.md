@@ -124,6 +124,7 @@ full client list.
 | `/hub/approvals` | Authenticated | Organization/client-scoped approval queue |
 | `/hub/approvals/[approvalId]` | Authenticated | Versioned review, comments and decisions |
 | `/review/[token]` | Secure token | Account-free guest approval and feedback |
+| `/review/campaign/[token]` | Secure token | One-link campaign review with individual and bulk decisions |
 | `/hub/calendar` | Authenticated | Month, week/list-style planning with client filters |
 | `/hub/published` | Authenticated | Client-scoped publishing history |
 | `/api/auth/[...all]` | Better Auth | Auth handler |
@@ -227,6 +228,10 @@ The pre-publishing workflow now includes:
     check.
 16. Manual scheduling and publishing handoff so the complete workflow can run
     before direct social APIs are connected.
+17. Secure campaign review links that freeze the included approval requests,
+    expire after 30 days and revoke the previous campaign link when replaced.
+18. Campaign reviewers can approve or request changes item by item, leave
+    comments, or approve every remaining item in one action.
 
 ## Monochrome workflow refinement
 

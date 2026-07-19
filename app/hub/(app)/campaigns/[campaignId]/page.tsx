@@ -8,6 +8,7 @@ import { db } from '@/lib/db'
 import { campaign, client, contentItem, type ContentStatus } from '@/lib/db/schema'
 import { EditCampaignForm } from '@/app/hub/(app)/campaigns/campaign-form'
 import { sendCampaignForApprovalAction } from '@/app/hub/(app)/campaigns/actions'
+import { CampaignReviewLink } from '@/app/hub/(app)/campaigns/campaign-review-link'
 
 export default async function CampaignPage({
   params,
@@ -82,6 +83,9 @@ export default async function CampaignPage({
               </form>
             )}
           </div>
+          {items.length > 0 && (
+            <CampaignReviewLink campaignId={current.id} />
+          )}
           {items.length === 0 ? <p>No content assigned yet.</p> : items.map((item) => (
             <Link href={`/hub/content/${item.id}`} key={item.id}>
               <span><strong>{item.title}</strong><small>{item.scheduledDate ?? 'Not planned'}</small></span>

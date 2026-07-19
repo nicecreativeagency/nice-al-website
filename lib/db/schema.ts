@@ -398,6 +398,64 @@ export const approvalLink = pgTable(
   ],
 )
 
+export const campaignReviewLink = pgTable(
+  'campaign_review_links',
+  {
+    id: text('id').primaryKey(),
+    organizationId: text('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    campaignId: text('campaign_id')
+      .notNull()
+      .references(() => campaign.id, { onDelete: 'cascade' }),
+    tokenHash: text('token_hash').notNull().unique(),
+    createdByUserId: text('created_by_user_id').references(() => user.id, {
+      onDelete: 'set null',
+    }),
+    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+    revokedAt: timestamp('revoked_at', { withTimezone: true }),
+    lastAccessedAt: timestamp('last_accessed_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index('campaign_review_links_organization_id_idx').on(
+      table.organizationId,
+    ),
+    index('campaign_review_links_campaign_id_idx').on(table.campaignId),
+  ],
+)
+
+export const campaignReviewItem = pgTable(
+  'campaign_review_items',
+  {
+    id: text('id').primaryKey(),
+    campaignReviewLinkId: text('campaign_review_link_id')
+      .notNull()
+      .references(() => campaignReviewLink.id, { onDelete: 'cascade' }),
+    approvalRequestId: text('approval_request_id')
+      .notNull()
+      .references(() => approvalRequest.id, { onDelete: 'cascade' }),
+    sortOrder: integer('sort_order').default(0).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    uniqueIndex('campaign_review_items_link_approval_idx').on(
+      table.campaignReviewLinkId,
+      table.approvalRequestId,
+    ),
+    index('campaign_review_items_link_id_idx').on(
+      table.campaignReviewLinkId,
+    ),
+    index('campaign_review_items_approval_id_idx').on(
+      table.approvalRequestId,
+    ),
+  ],
+)
+
 export const approvalComment = pgTable(
   'approval_comments',
   {
@@ -503,6 +561,8 @@ export const schema = {
   contentMedia,
   approvalRequest,
   approvalLink,
+  campaignReviewLink,
+  campaignReviewItem,
   approvalComment,
   activityEvent,
   notification,
