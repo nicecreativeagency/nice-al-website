@@ -18,10 +18,10 @@ async function baselineExistingNeonSchema() {
   `
 
   const [history] = await query`
-    SELECT count(*)::int AS count
+    SELECT max(created_at) AS created_at
     FROM drizzle.__drizzle_migrations
   `
-  if (Number(history?.count ?? 0) > 0) return
+  if (Number(history?.created_at ?? 0) >= EXISTING_SCHEMA_BASELINE) return
 
   const [existing] = await query`
     SELECT
