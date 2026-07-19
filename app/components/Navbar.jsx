@@ -8,6 +8,7 @@ const NAV_LINKS = [
   { label: 'About', href: '#about' },
   { label: 'Products', href: '#products' },
   { label: 'Contact', href: '#contact' },
+  { label: 'NICE Social Hub', href: '/hub', isHub: true },
 ]
 
 export default function Navbar() {
@@ -52,7 +53,12 @@ export default function Navbar() {
 
         <div className={styles.links}>
           {NAV_LINKS.map((link) => (
-            <a key={link.href} href={link.href} className={styles.link} data-cursor="hover">
+            <a
+              key={link.href}
+              href={link.href}
+              className={`${styles.link} ${link.isHub ? styles.hubLink : ''}`}
+              data-cursor="hover"
+            >
               {link.label}
             </a>
           ))}
@@ -81,7 +87,7 @@ export default function Navbar() {
               <motion.a
                 key={link.href}
                 href={link.href}
-                className={styles.mobileLink}
+                className={`${styles.mobileLink} ${link.isHub ? styles.mobileHubLink : ''}`}
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 + i * 0.08, duration: 0.5 }}

@@ -57,6 +57,13 @@
   opacity: 0.5;
 }
 
+.hubLink {
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 8px 14px;
+  margin-top: -8px;
+}
+
 .burger {
   display: none;
   flex-direction: column;
@@ -113,6 +120,14 @@
 
 .mobileLink:hover {
   opacity: 0.4;
+}
+
+.mobileHubLink {
+  margin-top: 12px;
+  padding: 14px 22px;
+  border: 2px solid currentColor;
+  border-radius: 999px;
+  font-size: 22px;
 }
 
 @media (max-width: 768px) {
