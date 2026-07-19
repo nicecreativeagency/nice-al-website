@@ -46,3 +46,10 @@ export const CONTENT_STATUS_LABELS: Record<ContentStatus, string> = {
   failed: 'Failed',
   archived: 'Archived',
 }
+
+export function getContentTypeLabel(contentType: string) {
+  return (
+    CONTENT_TYPE_OPTIONS.find((option) => option.value === contentType)?.label ??
+    contentType
+  )
+}

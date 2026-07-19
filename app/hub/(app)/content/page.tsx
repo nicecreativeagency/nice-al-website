@@ -1,5 +1,7 @@
+import Link from 'next/link'
 import { desc, eq } from 'drizzle-orm'
 import {
+  ArrowUpRight,
   CalendarClock,
   CheckCircle2,
   FileStack,
@@ -7,7 +9,7 @@ import {
 } from 'lucide-react'
 import {
   CONTENT_STATUS_LABELS,
-  CONTENT_TYPE_OPTIONS,
+  getContentTypeLabel,
   SOCIAL_PLATFORM_LABELS,
 } from '@/lib/content-settings'
 import { requireAdmin } from '@/lib/dal'
@@ -133,9 +135,7 @@ export default async function ContentPage({
                   <small>
                     {item.clientName}
                     <i aria-hidden="true">·</i>
-                    {CONTENT_TYPE_OPTIONS.find(
-                      (option) => option.value === item.contentType,
-                    )?.label ?? item.contentType}
+                    {getContentTypeLabel(item.contentType)}
                   </small>
                 </div>
               </div>
@@ -165,6 +165,14 @@ export default async function ContentPage({
               <span className={`contentStatus is-${item.status}`}>
                 {CONTENT_STATUS_LABELS[item.status]}
               </span>
+
+              <Link
+                className="contentOpenLink"
+                href={`/hub/content/${item.id}`}
+                aria-label={`Open ${item.title}`}
+              >
+                <ArrowUpRight size={17} aria-hidden="true" />
+              </Link>
             </article>
           ))}
         </section>

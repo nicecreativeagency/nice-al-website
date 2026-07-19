@@ -112,6 +112,7 @@ full client list.
 | `/hub/clients` | Admin only | Create and list organization clients |
 | `/hub/clients/[clientId]` | Admin only | Edit an organization client workspace |
 | `/hub/content` | Admin only | Create and list content drafts |
+| `/hub/content/[contentId]` | Admin only | Edit content, targets and channel captions |
 | `/hub/campaigns` | Admin only | Milestone placeholder |
 | `/hub/media` | Admin only | Milestone placeholder |
 | `/hub/social-accounts` | Admin only | Future OAuth placeholder |

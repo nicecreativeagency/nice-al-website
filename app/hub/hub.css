@@ -1003,7 +1003,7 @@
   display: grid;
   grid-template-columns:
     minmax(280px, 1.5fr) minmax(180px, 0.9fr)
-    minmax(170px, 0.8fr) minmax(130px, 0.6fr);
+    minmax(170px, 0.8fr) minmax(130px, 0.6fr) 36px;
   align-items: center;
   gap: 20px;
 }
@@ -1124,6 +1124,220 @@
 .contentStatus.is-scheduled {
   background: #e9eef8;
   color: #49617f;
+}
+
+.contentOpenLink {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--hub-line);
+  border-radius: 8px;
+  background: white;
+  color: #7c7c75;
+  transition:
+    border-color 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+.contentOpenLink:hover {
+  border-color: #bdbdb5;
+  color: var(--hub-ink);
+  transform: translateY(-1px);
+}
+
+.contentWorkspaceHeader {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 38px;
+}
+
+.contentWorkspaceHeader > span:first-child {
+  width: 62px;
+  height: 62px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  color: white;
+}
+
+.contentWorkspaceHeader > div {
+  min-width: 0;
+}
+
+.contentWorkspaceHeader p {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 5px;
+  color: #92928a;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.contentWorkspaceHeader p i {
+  color: #c2c2ba;
+  font-style: normal;
+}
+
+.contentWorkspaceHeader h1 {
+  overflow: hidden;
+  margin: 0;
+  font-size: clamp(28px, 4vw, 46px);
+  font-weight: 600;
+  letter-spacing: -0.055em;
+  line-height: 1.08;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.contentSettingsForm {
+  overflow: hidden;
+  border: 1px solid var(--hub-line);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.contentSettingsSection {
+  display: grid;
+  grid-template-columns: minmax(210px, 0.65fr) minmax(0, 1.35fr);
+  gap: 48px;
+  padding: 30px;
+}
+
+.contentSettingsSection + .contentSettingsSection {
+  border-top: 1px solid var(--hub-line);
+}
+
+.contentSettingsSection > div:first-child p {
+  margin: 0 0 6px;
+  color: var(--hub-ink);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.contentSettingsSection > div:first-child span {
+  color: #92928a;
+  font-size: 9px;
+  line-height: 1.6;
+}
+
+.contentSettingsFields {
+  display: grid;
+  gap: 20px;
+}
+
+.contentSettingsSplit {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.contentSettingsForm label {
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.contentSettingsForm label > span,
+.contentSettingsForm .platformPicker legend {
+  color: #55554f;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.contentSettingsForm input,
+.contentSettingsForm select,
+.contentSettingsForm textarea {
+  width: 100%;
+  border: 1px solid #d8d8d1;
+  border-radius: 9px;
+  outline: none;
+  background: #fbfbf8;
+  color: var(--hub-ink);
+  font-size: 11px;
+}
+
+.contentSettingsForm input,
+.contentSettingsForm select {
+  height: 44px;
+  padding: 0 13px;
+}
+
+.contentSettingsForm textarea {
+  padding: 12px 13px;
+  resize: vertical;
+  line-height: 1.65;
+}
+
+.contentSettingsForm input:focus,
+.contentSettingsForm select:focus,
+.contentSettingsForm textarea:focus {
+  border-color: #8a8a82;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(17, 17, 15, 0.05);
+}
+
+.contentSettingsForm [aria-invalid='true'] {
+  border-color: #d98270;
+}
+
+.contentSettingsForm label small {
+  color: #b44631;
+  font-size: 9px;
+}
+
+.captionOverrideToggle {
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 12px !important;
+  padding: 14px;
+  border: 1px solid #deded7;
+  border-radius: 10px;
+  background: #f5f5f1;
+  cursor: pointer;
+}
+
+.captionOverrideToggle > input {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  accent-color: var(--hub-ink);
+}
+
+.captionOverrideToggle > span {
+  display: grid;
+  gap: 2px;
+}
+
+.captionOverrideToggle strong {
+  color: #55554f;
+  font-size: 10px;
+}
+
+.captionOverrideToggle small {
+  color: #999991 !important;
+  font-size: 8px !important;
+}
+
+.captionOverrides {
+  display: grid;
+  gap: 16px;
+  padding-left: 14px;
+  border-left: 2px solid #e2e2db;
+}
+
+.contentSettingsError {
+  margin: 20px 30px 0;
+  padding: 11px 12px;
+  border: 1px solid #f0c0b7;
+  border-radius: 8px;
+  background: #fff3f0;
+  color: #a83924;
+  font-size: 9px;
 }
 
 .accessNotice {
@@ -1885,7 +2099,7 @@
   }
 
   .contentRow {
-    grid-template-columns: minmax(180px, 1fr) auto;
+    grid-template-columns: minmax(180px, 1fr) auto auto;
     gap: 12px;
     padding: 17px 18px;
   }
@@ -1893,6 +2107,11 @@
   .contentPlatforms,
   .contentSchedule {
     display: none;
+  }
+
+  .contentSettingsSection {
+    grid-template-columns: 1fr;
+    gap: 22px;
   }
 
   .directoryHeading {
@@ -1949,8 +2168,25 @@
   }
 
   .contentFormGrid,
-  .platformPicker > div {
+  .platformPicker > div,
+  .contentSettingsSplit {
     grid-template-columns: 1fr;
+  }
+
+  .contentWorkspaceHeader {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .contentWorkspaceHeader > .contentStatus {
+    grid-column: 1 / -1;
+  }
+
+  .contentWorkspaceHeader h1 {
+    font-size: 28px;
+  }
+
+  .contentSettingsSection {
+    padding: 22px;
   }
 
   .metricGrid {
