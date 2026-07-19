@@ -76,6 +76,57 @@ export type UpdateContentState = {
   }
 }
 
+export async function setManualPublishingStatusAction(
+  contentId: string,
+  nextStatus: 'scheduled' | 'published',
+) {
+  const viewer = await requireAdmin()
+  const [item] = await db
+    .select({
+      id: contentItem.id,
+      clientId: contentItem.clientId,
+      status: contentItem.status,
+    })
+    .from(contentItem)
+    .where(
+      and(
+        eq(contentItem.id, contentId),
+        eq(contentItem.organizationId, viewer.organization.id),
+      ),
+    )
+    .limit(1)
+  if (!item) redirect('/hub/content?error=not-found')
+
+  const allowed =
+    (nextStatus === 'scheduled' && item.status === 'ready_to_schedule') ||
+    (nextStatus === 'published' && item.status === 'scheduled')
+  if (!allowed) {
+    redirect(`/hub/content/${contentId}?workflowError=invalid-transition`)
+  }
+
+  await db
+    .update(contentItem)
+    .set({ status: nextStatus, updatedAt: new Date() })
+    .where(eq(contentItem.id, item.id))
+  await recordActivity({
+    organizationId: viewer.organization.id,
+    clientId: item.clientId,
+    contentItemId: item.id,
+    actor: { id: viewer.user.id, name: viewer.user.name },
+    action:
+      nextStatus === 'scheduled'
+        ? 'publishing.manually_scheduled'
+        : 'publishing.manually_completed',
+  })
+
+  revalidatePath(`/hub/content/${contentId}`)
+  revalidatePath('/hub/content')
+  revalidatePath('/hub/calendar')
+  revalidatePath('/hub/dashboard')
+  revalidatePath('/hub/published')
+  redirect(`/hub/content/${contentId}?workflow=${nextStatus}`)
+}
+
 export async function updateContentAction(
   contentId: string,
   _state: UpdateContentState,

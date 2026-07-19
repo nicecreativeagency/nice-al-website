@@ -2,7 +2,8 @@
 
 import { useRef, useState } from 'react'
 import Link from 'next/link'
-import { Copy, ExternalLink, FileImage, X } from 'lucide-react'
+import { Copy, ExternalLink, FileImage, Trash2, X } from 'lucide-react'
+import { deleteUnusedMediaAction } from '@/app/hub/(app)/media/actions'
 
 export type MediaLibraryAsset = {
   id: string
@@ -109,6 +110,21 @@ export function MediaLibrary({ assets }: { assets: MediaLibraryAsset[] }) {
                   </Link>
                 )) : <p>This asset is not attached to content.</p>}
               </section>
+              {selected.usages.length === 0 && (
+                <form
+                  className="mediaDeleteForm"
+                  action={deleteUnusedMediaAction}
+                >
+                  <input type="hidden" name="assetId" value={selected.id} />
+                  <label>
+                    <input name="confirm" type="checkbox" value="yes" required />
+                    <span>I understand this permanently deletes the file</span>
+                  </label>
+                  <button type="submit">
+                    <Trash2 size={15} /> Delete unused asset
+                  </button>
+                </form>
+              )}
             </aside>
           </div>
         ) : null}

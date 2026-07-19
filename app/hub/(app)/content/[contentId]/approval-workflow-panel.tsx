@@ -16,6 +16,7 @@ import {
   createAdditionalGuestLinkAction,
   createApprovalRequestAction,
 } from '@/app/hub/(app)/approvals/actions'
+import { setManualPublishingStatusAction } from '@/app/hub/(app)/content/[contentId]/actions'
 
 type LatestApproval = {
   id: string
@@ -134,7 +135,7 @@ export function ApprovalWorkflowPanel({
             Create another link
           </button>
         </div>
-      ) : (
+      ) : !approved ? (
         <div className="approvalSendForm">
           <div>
             <small>Next action</small>
@@ -160,7 +161,7 @@ export function ApprovalWorkflowPanel({
             <ArrowRight size={16} />
           </button>
         </div>
-      )}
+      ) : null}
 
       {shareUrl && (
         <div className="approvalShareLink">
@@ -168,6 +169,53 @@ export function ApprovalWorkflowPanel({
           <button type="button" onClick={() => copyLink(shareUrl)}>
             <Clipboard size={15} /> Copy
           </button>
+        </div>
+      )}
+      {contentStatus === 'ready_to_schedule' && (
+        <form
+          className="manualPublishingAction"
+          action={setManualPublishingStatusAction.bind(
+            null,
+            contentId,
+            'scheduled',
+          )}
+        >
+          <div>
+            <small>Manual publishing mode</small>
+            <strong>Approval and planning are complete</strong>
+            <p>Confirm this item is placed in your external publishing queue.</p>
+          </div>
+          <button type="submit">
+            <CalendarCheck2 size={16} /> Confirm scheduled
+          </button>
+        </form>
+      )}
+      {contentStatus === 'scheduled' && (
+        <form
+          className="manualPublishingAction"
+          action={setManualPublishingStatusAction.bind(
+            null,
+            contentId,
+            'published',
+          )}
+        >
+          <div>
+            <small>Manual publishing mode</small>
+            <strong>Scheduled and ready for handoff</strong>
+            <p>After publishing externally, close the loop here.</p>
+          </div>
+          <button type="submit">
+            <CheckCircle2 size={16} /> Mark as published
+          </button>
+        </form>
+      )}
+      {contentStatus === 'published' && (
+        <div className="manualPublishingComplete">
+          <CheckCircle2 size={19} />
+          <div>
+            <strong>Published</strong>
+            <small>This content is now in publishing history.</small>
+          </div>
         </div>
       )}
       {error && <p className="workflowError">{error}</p>}

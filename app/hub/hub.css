@@ -3714,6 +3714,37 @@
   padding: 10px;
   text-decoration: none;
 }
+.mediaDeleteForm {
+  border-top: 1px solid #ccc;
+  display: grid;
+  gap: 11px;
+  margin-top: 18px;
+  padding-top: 18px;
+}
+.mediaDeleteForm label {
+  align-items: center;
+  display: flex;
+  font-size: 10px;
+  gap: 8px;
+}
+.mediaDeleteForm input {
+  accent-color: #000;
+  height: 15px;
+  width: 15px;
+}
+.mediaDeleteForm button {
+  align-items: center;
+  background: #fff;
+  border: 1px dashed #000;
+  border-radius: 8px;
+  color: #000;
+  display: inline-flex;
+  font-size: 10px;
+  font-weight: 800;
+  gap: 7px;
+  justify-content: center;
+  min-height: 42px;
+}
 
 @media (max-width: 1320px) {
   .mediaLibraryGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -3749,4 +3780,481 @@
   .mediaLightboxDialog { padding: 56px 12px 12px; }
   .mediaInspectorDialog { height: 100vh; width: 100vw; }
   .mediaInspectorPreview { min-height: 340px; }
+}
+
+/* Settings and access management */
+.settingsSummary {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 22px;
+}
+.settingsSummary article {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 14px;
+  display: flex;
+  gap: 14px;
+  min-height: 94px;
+  padding: 20px;
+}
+.settingsSummary article > svg {
+  background: #000;
+  border-radius: 9px;
+  color: #fff;
+  height: 40px;
+  padding: 10px;
+  width: 40px;
+}
+.settingsSummary article span { display: grid; gap: 4px; }
+.settingsSummary article strong { font-size: 15px; font-weight: 800; }
+.settingsSummary article small { color: #666; font-size: 10px; }
+.settingsMembers {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 16px;
+  padding: 28px;
+}
+.settingsMembers > header {
+  align-items: flex-end;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 22px;
+  padding-bottom: 20px;
+}
+.settingsMembers > header p {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .13em;
+  margin: 0 0 6px;
+  text-transform: uppercase;
+}
+.settingsMembers > header h2 {
+  font-size: 28px;
+  letter-spacing: -.045em;
+  margin: 0;
+}
+.settingsMembers > header > span {
+  color: #666;
+  font-size: 10px;
+  font-weight: 700;
+}
+.settingsMemberGrid { display: grid; gap: 14px; }
+.memberAccessCard {
+  border: 1px solid #ccc;
+  border-radius: 13px;
+  overflow: hidden;
+}
+.memberAccessCard > header {
+  align-items: center;
+  background: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: auto 1fr auto;
+  padding: 16px;
+}
+.memberAccessCard > header > span {
+  align-items: center;
+  background: #000;
+  border-radius: 9px;
+  color: #fff;
+  display: flex;
+  font-size: 11px;
+  font-weight: 800;
+  height: 40px;
+  justify-content: center;
+  width: 40px;
+}
+.memberAccessCard > header > div { display: grid; gap: 2px; }
+.memberAccessCard > header strong { font-size: 13px; }
+.memberAccessCard > header small { color: #666; font-size: 10px; }
+.memberAccessCard > header em {
+  border: 1px solid #000;
+  border-radius: 999px;
+  font-size: 8px;
+  font-style: normal;
+  font-weight: 800;
+  padding: 6px 9px;
+  text-transform: uppercase;
+}
+.memberAccessForm {
+  align-items: end;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 190px 1fr auto;
+  padding: 18px;
+}
+.memberAccessForm > label,
+.memberSecurity label,
+.memberCreateForm label { display: grid; gap: 7px; }
+.memberAccessForm > label > span,
+.memberSecurity label > span,
+.memberCreateForm label > span,
+.memberClientChoices legend {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .04em;
+}
+.memberAccessForm select,
+.memberSecurity input,
+.memberCreateForm input,
+.memberCreateForm select {
+  background: #fff;
+  border: 1px solid #bbb;
+  border-radius: 8px;
+  color: #000;
+  font-size: 12px;
+  height: 43px;
+  padding: 0 11px;
+  width: 100%;
+}
+.memberAccessForm fieldset,
+.memberClientChoices {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+.memberAccessForm fieldset > div,
+.memberClientChoices > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 8px;
+}
+.memberAccessForm fieldset label,
+.memberClientChoices > div label {
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 999px;
+  cursor: pointer;
+  display: flex;
+  gap: 7px;
+  min-height: 34px;
+  padding: 0 10px;
+}
+.memberAccessForm fieldset input,
+.memberClientChoices input { accent-color: #000; }
+.memberAccessForm fieldset span,
+.memberClientChoices > div span {
+  font-size: 10px;
+  font-weight: 700;
+}
+.memberAccessForm > button,
+.memberSecurity button,
+.memberCreateForm footer button {
+  align-items: center;
+  border: 1px solid #000;
+  border-radius: 8px;
+  display: inline-flex;
+  font-size: 10px;
+  font-weight: 800;
+  gap: 7px;
+  height: 43px;
+  justify-content: center;
+  padding: 0 13px;
+}
+.memberAccessForm > button,
+.memberCreateForm footer button[type='submit'] {
+  background: #000;
+  color: #fff;
+}
+.memberSecurity {
+  border-top: 1px solid #ddd;
+  padding: 0 18px;
+}
+.memberSecurity summary {
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 14px 0;
+}
+.memberSecurity[open] { padding-bottom: 18px; }
+.memberSecurity form {
+  align-items: end;
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+.memberSecurity form label { flex: 1; }
+.memberSecurity button { background: #fff; color: #000; }
+.memberSecurity .memberRevokeButton { border-style: dashed; }
+.memberRevokeConfirm {
+  align-items: center;
+  display: flex !important;
+  flex-direction: row;
+  gap: 8px !important;
+}
+.memberRevokeConfirm input {
+  accent-color: #000;
+  height: 15px;
+  width: 15px;
+}
+.memberRevokeConfirm span { font-size: 9px !important; }
+.memberAccessForm > button:disabled {
+  cursor: not-allowed;
+  opacity: .35;
+}
+.memberDialog {
+  background: #fff;
+  border: 1px solid #000;
+  border-radius: 16px;
+  color: #000;
+  max-width: 720px;
+  padding: 0;
+  width: min(calc(100vw - 28px), 720px);
+}
+.memberDialog::backdrop { background: rgba(0, 0, 0, .7); }
+.memberDialog > header {
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  padding: 24px 26px;
+}
+.memberDialog > header p {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .13em;
+  margin: 0 0 6px;
+  text-transform: uppercase;
+}
+.memberDialog > header h2 {
+  font-size: 30px;
+  letter-spacing: -.045em;
+  margin: 0;
+}
+.memberDialog > header button {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #000;
+  border-radius: 50%;
+  display: flex;
+  height: 38px;
+  justify-content: center;
+  width: 38px;
+}
+.memberCreateForm { display: grid; gap: 20px; padding: 26px; }
+.memberFormSplit {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.memberCreateForm em,
+.memberClientChoices p {
+  color: #666;
+  font-size: 9px;
+  font-style: normal;
+  margin: 0;
+}
+.memberClientChoices p { margin-top: 5px; }
+.memberClientChoices i {
+  border: 1px solid #000;
+  border-radius: 50%;
+  height: 10px;
+  width: 10px;
+}
+.memberFormError {
+  border: 1px solid #000;
+  border-radius: 8px;
+  font-size: 11px;
+  margin: 0;
+  padding: 11px;
+}
+.memberCreateForm footer {
+  display: flex;
+  gap: 9px;
+  justify-content: flex-end;
+}
+.memberCreateForm footer button { min-width: 120px; }
+
+@media (max-width: 900px) {
+  .settingsSummary { grid-template-columns: 1fr; }
+  .memberAccessForm { grid-template-columns: 1fr; }
+  .memberAccessForm > button { width: 100%; }
+}
+@media (max-width: 620px) {
+  .settingsMembers { padding: 18px; }
+  .settingsMembers > header { align-items: flex-start; flex-direction: column; gap: 8px; }
+  .memberAccessCard > header { grid-template-columns: auto 1fr; }
+  .memberAccessCard > header em { grid-column: 1 / -1; width: fit-content; }
+  .memberFormSplit { grid-template-columns: 1fr; }
+  .memberSecurity form { align-items: stretch; flex-direction: column; }
+  .memberSecurity button { width: 100%; }
+  .memberCreateForm footer { flex-direction: column-reverse; }
+  .memberCreateForm footer button { width: 100%; }
+}
+
+/* Bulk content operations */
+.bulkContentForm { display: grid; gap: 12px; }
+.bulkContentToolbar {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  display: flex;
+  gap: 10px;
+  padding: 10px 12px;
+}
+.bulkContentToolbar > label {
+  align-items: center;
+  display: flex;
+  font-size: 10px;
+  font-weight: 800;
+  gap: 7px;
+}
+.bulkContentToolbar input,
+.contentBulkCheckbox input {
+  accent-color: #000;
+  height: 16px;
+  width: 16px;
+}
+.bulkContentToolbar strong {
+  color: #666;
+  font-size: 9px;
+  margin-right: auto;
+}
+.bulkContentToolbar select {
+  background: #fff;
+  border: 1px solid #aaa;
+  border-radius: 8px;
+  font-size: 10px;
+  height: 38px;
+  padding: 0 10px;
+}
+.bulkContentToolbar button {
+  align-items: center;
+  background: #000;
+  border: 1px solid #000;
+  border-radius: 8px;
+  color: #fff;
+  display: inline-flex;
+  font-size: 10px;
+  font-weight: 800;
+  gap: 7px;
+  height: 38px;
+  padding: 0 12px;
+}
+.bulkContentToolbar button:disabled { cursor: not-allowed; opacity: .35; }
+.contentDirectoryBulk .contentDirectoryHeading,
+.contentDirectoryBulk .contentRow {
+  grid-template-columns: 24px minmax(270px, 1.5fr) minmax(170px, .8fr)
+    minmax(155px, .75fr) minmax(140px, .58fr) 42px;
+}
+.contentBulkCheckbox {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+@media (max-width: 1080px) {
+  .contentDirectoryBulk .contentDirectoryHeading,
+  .contentDirectoryBulk .contentRow {
+    grid-template-columns: 24px minmax(260px, 1.5fr) minmax(150px, .8fr)
+      minmax(140px, .75fr) 42px;
+  }
+  .contentDirectoryBulk .contentDirectoryHeading > span:nth-child(5),
+  .contentDirectoryBulk .contentRow > .contentStatus { display: none; }
+}
+@media (max-width: 760px) {
+  .bulkContentToolbar { align-items: stretch; flex-wrap: wrap; }
+  .bulkContentToolbar strong { align-self: center; }
+  .bulkContentToolbar select,
+  .bulkContentToolbar button { flex: 1 1 180px; }
+}
+
+/* Campaign-level approval */
+.campaignApprovalButton {
+  align-items: center;
+  background: #000;
+  border: 1px solid #000;
+  border-radius: 8px;
+  color: #fff;
+  display: inline-flex;
+  font-size: 10px;
+  font-weight: 800;
+  gap: 7px;
+  min-height: 40px;
+  padding: 0 14px;
+}
+
+/* Manual publishing handoff before direct API integrations */
+.manualPublishingAction,
+.manualPublishingComplete {
+  align-items: center;
+  border: 1px solid #000;
+  border-radius: 12px;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding: 18px;
+}
+.manualPublishingAction > div,
+.manualPublishingComplete > div {
+  display: grid;
+  gap: 4px;
+}
+.manualPublishingAction small,
+.manualPublishingComplete small {
+  color: #555;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.manualPublishingAction strong,
+.manualPublishingComplete strong { font-size: 13px; }
+.manualPublishingAction p {
+  color: #555;
+  font-size: 10px;
+  margin: 0;
+}
+.manualPublishingAction button {
+  align-items: center;
+  background: #000;
+  border: 1px solid #000;
+  border-radius: 8px;
+  color: #fff;
+  display: inline-flex;
+  font-size: 10px;
+  font-weight: 800;
+  gap: 7px;
+  min-height: 42px;
+  padding: 0 14px;
+  white-space: nowrap;
+}
+.manualPublishingComplete { justify-content: flex-start; }
+
+.notificationPanelHeader {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+.notificationPanelHeader p { margin: 0; }
+.notificationPanelHeader button {
+  background: #fff;
+  border: 0;
+  color: #000;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 4px 0;
+  text-decoration: underline;
+}
+.notificationPanel li.is-read { opacity: .48; }
+.notificationPanel li a {
+  color: #000;
+  font-size: 9px;
+  font-weight: 800;
+  margin-top: 3px;
+  width: fit-content;
+}
+
+@media (max-width: 620px) {
+  .manualPublishingAction {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .manualPublishingAction button { justify-content: center; width: 100%; }
 }

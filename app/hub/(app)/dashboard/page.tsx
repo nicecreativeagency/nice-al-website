@@ -12,6 +12,7 @@ import { requireViewer } from '@/lib/dal'
 import { db } from '@/lib/db'
 import { client, contentItem, notification } from '@/lib/db/schema'
 import { PageHeader } from '@/app/hub/components/page-header'
+import { markAllNotificationsReadAction } from '@/app/hub/(app)/dashboard/actions'
 
 export default async function DashboardPage({
   searchParams,
@@ -53,6 +54,7 @@ export default async function DashboardPage({
     .where(eq(notification.recipientUserId, viewer.user.id))
     .orderBy(desc(notification.createdAt))
     .limit(5)
+  const unreadNotices = notices.filter((item) => !item.readAt).length
 
   return (
     <div className="hubPage">
@@ -95,9 +97,25 @@ export default async function DashboardPage({
           )}
         </section>
         <aside className="foundationPanel notificationPanel">
-          <p>Recent notifications</p>
+          <div className="notificationPanelHeader">
+            <p>Recent notifications</p>
+            {unreadNotices > 0 && (
+              <form action={markAllNotificationsReadAction}>
+                <button type="submit">Mark all read</button>
+              </form>
+            )}
+          </div>
           {notices.length === 0 ? <span className="foundationNext">No notifications yet</span> : (
-            <ul>{notices.map((item) => <li key={item.id}><CheckCircle2 size={15} /><span><strong>{item.title}</strong><small>{item.body}</small></span></li>)}</ul>
+            <ul>{notices.map((item) => (
+              <li className={item.readAt ? 'is-read' : ''} key={item.id}>
+                <CheckCircle2 size={15} />
+                <span>
+                  <strong>{item.title}</strong>
+                  <small>{item.body}</small>
+                  {item.href && <Link href={item.href}>Open</Link>}
+                </span>
+              </li>
+            ))}</ul>
           )}
         </aside>
       </div>

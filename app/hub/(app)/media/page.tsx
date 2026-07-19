@@ -1,5 +1,5 @@
 import { desc, eq } from 'drizzle-orm'
-import { FolderOpen } from 'lucide-react'
+import { CheckCircle2, FolderOpen } from 'lucide-react'
 import { requireAdmin } from '@/lib/dal'
 import { db } from '@/lib/db'
 import { client, contentItem, contentMedia, mediaAsset } from '@/lib/db/schema'
@@ -9,8 +9,13 @@ import {
   type MediaLibraryAsset,
 } from '@/app/hub/(app)/media/media-library'
 
-export default async function MediaPage() {
+export default async function MediaPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | undefined>>
+}) {
   const viewer = await requireAdmin()
+  const params = await searchParams
   const rows = await db
     .select({
       id: mediaAsset.id,
@@ -75,6 +80,18 @@ export default async function MediaPage() {
         title="Media"
         description="Inspect every final asset, see where it is used and copy its direct link."
       />
+      {params.deleted && (
+        <div className="clientSuccess">
+          <CheckCircle2 size={17} /> The unused asset was permanently deleted.
+        </div>
+      )}
+      {params.error && (
+        <div className="accessNotice">
+          {params.error === 'in-use'
+            ? 'This asset is still used in content and cannot be deleted.'
+            : 'The asset could not be deleted. No content was changed.'}
+        </div>
+      )}
       {assets.length === 0 ? (
         <section className="contentEmpty">
           <span><FolderOpen size={24} /></span>

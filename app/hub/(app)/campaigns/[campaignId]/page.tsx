@@ -1,19 +1,20 @@
 import Link from 'next/link'
 import { and, desc, eq } from 'drizzle-orm'
-import { ArrowLeft, ArrowUpRight, CheckCircle2 } from 'lucide-react'
+import { ArrowLeft, ArrowUpRight, CheckCircle2, Send } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import { CONTENT_STATUS_LABELS } from '@/lib/content-settings'
 import { requireAdmin } from '@/lib/dal'
 import { db } from '@/lib/db'
 import { campaign, client, contentItem, type ContentStatus } from '@/lib/db/schema'
 import { EditCampaignForm } from '@/app/hub/(app)/campaigns/campaign-form'
+import { sendCampaignForApprovalAction } from '@/app/hub/(app)/campaigns/actions'
 
 export default async function CampaignPage({
   params,
   searchParams,
 }: {
   params: Promise<{ campaignId: string }>
-  searchParams: Promise<{ saved?: string; created?: string }>
+  searchParams: Promise<{ saved?: string; created?: string; approvals?: string }>
 }) {
   const viewer = await requireAdmin()
   const { campaignId } = await params
@@ -61,10 +62,26 @@ export default async function CampaignPage({
       {(notices.saved || notices.created) && (
         <div className="clientSuccess"><CheckCircle2 size={16} />Campaign saved.</div>
       )}
+      {notices.approvals && (
+        <div className="clientSuccess">
+          <CheckCircle2 size={16} />
+          {notices.approvals} campaign items were sent for approval.
+        </div>
+      )}
       <div className="campaignWorkspaceGrid">
         <EditCampaignForm clients={viewer.clients} campaign={current} />
         <aside className="campaignContentPanel">
-          <div><p>Campaign content</p><span>{items.length} items</span></div>
+          <div>
+            <p>Campaign content</p>
+            <span>{items.length} items</span>
+            {items.length > 0 && (
+              <form action={sendCampaignForApprovalAction.bind(null, current.id)}>
+                <button className="campaignApprovalButton" type="submit">
+                  <Send size={14} /> Send all for approval
+                </button>
+              </form>
+            )}
+          </div>
           {items.length === 0 ? <p>No content assigned yet.</p> : items.map((item) => (
             <Link href={`/hub/content/${item.id}`} key={item.id}>
               <span><strong>{item.title}</strong><small>{item.scheduledDate ?? 'Not planned'}</small></span>

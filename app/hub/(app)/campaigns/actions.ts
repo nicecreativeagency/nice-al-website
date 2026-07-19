@@ -4,10 +4,11 @@ import { and, eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
+import { createApprovalRequestAction } from '@/app/hub/(app)/approvals/actions'
 import { recordActivity } from '@/lib/activity'
 import { requireAdmin } from '@/lib/dal'
 import { db } from '@/lib/db'
-import { campaign, client } from '@/lib/db/schema'
+import { campaign, client, contentItem } from '@/lib/db/schema'
 
 const campaignSchema = z
   .object({
@@ -154,4 +155,40 @@ export async function updateCampaignAction(
   revalidatePath('/hub/campaigns')
   revalidatePath(`/hub/campaigns/${campaignId}`)
   redirect(`/hub/campaigns/${campaignId}?saved=1`)
+}
+
+export async function sendCampaignForApprovalAction(campaignId: string) {
+  const viewer = await requireAdmin()
+  const [ownedCampaign] = await db
+    .select({ id: campaign.id })
+    .from(campaign)
+    .where(
+      and(
+        eq(campaign.id, campaignId),
+        eq(campaign.organizationId, viewer.organization.id),
+      ),
+    )
+    .limit(1)
+  if (!ownedCampaign) redirect('/hub/campaigns')
+
+  const items = await db
+    .select({ id: contentItem.id, status: contentItem.status })
+    .from(contentItem)
+    .where(
+      and(
+        eq(contentItem.organizationId, viewer.organization.id),
+        eq(contentItem.campaignId, ownedCampaign.id),
+      ),
+    )
+  const reviewable = items.filter(
+    (item) => !['archived', 'published'].includes(item.status),
+  )
+  let completed = 0
+  for (const item of reviewable) {
+    const result = await createApprovalRequestAction(item.id, '')
+    if (result.ok) completed += 1
+  }
+
+  revalidatePath(`/hub/campaigns/${campaignId}`)
+  redirect(`/hub/campaigns/${campaignId}?approvals=${completed}`)
 }

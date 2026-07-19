@@ -14,6 +14,27 @@ export function getCloudinaryConfig() {
   return { cloudName, apiKey, apiSecret }
 }
 
+export async function deleteCloudinaryAsset(parameters: {
+  publicId: string
+  resourceType: 'image' | 'video'
+}) {
+  const config = getCloudinaryConfig()
+  cloudinary.config({
+    cloud_name: config.cloudName,
+    api_key: config.apiKey,
+    api_secret: config.apiSecret,
+    secure: true,
+  })
+
+  const result = await cloudinary.uploader.destroy(parameters.publicId, {
+    resource_type: parameters.resourceType,
+    invalidate: true,
+  })
+  if (result.result !== 'ok' && result.result !== 'not found') {
+    throw new Error(`Cloudinary refused to delete the asset: ${result.result}`)
+  }
+}
+
 export function createCloudinaryUploadSignature(parameters: {
   folder: string
   timestamp: number

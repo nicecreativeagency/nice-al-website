@@ -7,7 +7,13 @@ import {
   clientMember,
   notification,
   organizationMember,
+  user,
 } from '@/lib/db/schema'
+import {
+  escapeEmailHtml,
+  getPublicAppUrl,
+  sendTransactionalEmail,
+} from '@/lib/email'
 
 type Actor = {
   id?: string | null
@@ -68,8 +74,7 @@ export async function createNotifications(input: {
   const uniqueRecipients = Array.from(new Set(input.recipientUserIds))
   if (uniqueRecipients.length === 0) return
 
-  await db.insert(notification).values(
-    uniqueRecipients.map((recipientUserId) => ({
+  const rows = uniqueRecipients.map((recipientUserId) => ({
       id: crypto.randomUUID(),
       organizationId: input.organizationId,
       recipientUserId,
@@ -77,6 +82,38 @@ export async function createNotifications(input: {
       title: input.title,
       body: input.body ?? '',
       href: input.href,
-    })),
+  }))
+  await db.insert(notification).values(rows)
+
+  const recipients = await db
+    .select({ id: user.id, email: user.email, name: user.name })
+    .from(user)
+    .where(inArray(user.id, uniqueRecipients))
+  const appUrl = getPublicAppUrl()
+  const href = input.href ? `${appUrl}${input.href}` : `${appUrl}/hub/dashboard`
+
+  await Promise.all(
+    recipients.map(async (recipient) => {
+      const delivery = await sendTransactionalEmail({
+        to: recipient.email,
+        subject: input.title,
+        text: `${input.title}\n\n${input.body ?? ''}\n\nOpen NICE Social Hub: ${href}`,
+        html: `
+          <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;color:#000">
+            <p style="font-size:12px;text-transform:uppercase;letter-spacing:.12em">NICE Social Hub</p>
+            <h1 style="font-size:30px;line-height:1.15">${escapeEmailHtml(input.title)}</h1>
+            <p>Hi ${escapeEmailHtml(recipient.name)},</p>
+            <p>${escapeEmailHtml(input.body ?? '')}</p>
+            <p style="margin:30px 0">
+              <a href="${href}" style="display:inline-block;background:#000;color:#fff;padding:14px 22px;text-decoration:none;border-radius:8px">Open Social Hub</a>
+            </p>
+          </div>
+        `,
+        idempotencyKey: `notification-${rows.find((row) => row.recipientUserId === recipient.id)?.id}`,
+      })
+      if (delivery.status === 'failed') {
+        console.error('Notification email delivery failed', delivery.error)
+      }
+    }),
   )
 }

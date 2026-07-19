@@ -120,7 +120,7 @@ full client list.
 | `/hub/campaigns/[campaignId]` | Admin only | Campaign details and linked content |
 | `/hub/media` | Admin only | Organization media library with usage counts |
 | `/hub/social-accounts` | Admin only | Future OAuth placeholder |
-| `/hub/settings` | Admin only | Settings placeholder |
+| `/hub/settings` | Admin only | Create accounts, assign client access, reset passwords and revoke access |
 | `/hub/approvals` | Authenticated | Organization/client-scoped approval queue |
 | `/hub/approvals/[approvalId]` | Authenticated | Versioned review, comments and decisions |
 | `/review/[token]` | Secure token | Account-free guest approval and feedback |
@@ -143,6 +143,8 @@ Create `.env.local` from `.env.example`.
 | `CLOUDINARY_CLOUD_NAME` | Media | Cloudinary product environment |
 | `CLOUDINARY_API_KEY` | Media | Cloudinary signed-upload key |
 | `CLOUDINARY_API_SECRET` | Media | Server-only upload signing secret |
+| `RESEND_API_KEY` | Email | Server-only Resend API key |
+| `EMAIL_FROM` | Email | Verified sender, for example `NICE Social Hub <hub@updates.nice.al>` |
 | `DEV_ADMIN_EMAIL` | Local seed | Admin test email |
 | `DEV_ADMIN_PASSWORD` | Local seed | Admin test password, 12+ characters |
 | `DEV_CLIENT_EMAIL` | Local seed | Client test email |
@@ -177,7 +179,10 @@ Expected access:
    deployment environment.
 3. Run `npm run db:migrate` against the production database.
 4. Deploy the Next.js application.
-5. Add an invite/admin user-provisioning workflow before onboarding real users.
+5. In Settings, create real team/client accounts and assign only the client
+   workspaces each person may access.
+6. Verify an email subdomain in Resend and configure `RESEND_API_KEY` and
+   `EMAIL_FROM` before relying on email notifications.
 
 The production build also runs the idempotent Drizzle migration step before
 Next.js compiles. Vercel therefore applies pending migrations using its existing
@@ -212,6 +217,16 @@ The pre-publishing workflow now includes:
 8. Organization/client-scoped month and list calendar views.
 9. Publishing-readiness checks for media, captions, platforms, date and time.
 10. Role-scoped dashboard metrics and client portal views.
+11. Admin account creation, role changes, client-level membership, password
+    reset and access revocation with session invalidation.
+12. Resend-backed transactional notifications with database notifications as
+    the reliable fallback.
+13. Bulk content archiving, draft restoration and approval submission.
+14. Campaign-wide approval submission.
+15. Safe deletion of unused Cloudinary media only after a server-side usage
+    check.
+16. Manual scheduling and publishing handoff so the complete workflow can run
+    before direct social APIs are connected.
 
 ## Monochrome workflow refinement
 
@@ -242,7 +257,6 @@ queries retain organization-level and client-level server authorization.
 
 Direct publishing remains intentionally deferred. The next integration phase is:
 
-1. Resend email delivery for existing notification events.
-2. Meta OAuth, Facebook Pages and Instagram professional-account publishing.
-3. Reliable scheduled background jobs, retries and publishing logs.
-4. LinkedIn OAuth/publishing after product and permission approval.
+1. Meta OAuth, Facebook Pages and Instagram professional-account publishing.
+2. Reliable scheduled background jobs, retries and publishing logs.
+3. LinkedIn OAuth/publishing after product and permission approval.

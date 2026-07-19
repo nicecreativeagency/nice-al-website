@@ -29,6 +29,7 @@ import {
 } from '@/lib/db/schema'
 import { PageHeader } from '@/app/hub/components/page-header'
 import { NewContentDialog } from '@/app/hub/(app)/content/new-content-dialog'
+import { BulkContentForm } from '@/app/hub/(app)/content/bulk-content-form'
 
 type ContentListItem = {
   id: string
@@ -55,6 +56,9 @@ export default async function ContentPage({
     platform?: string
     schedule?: string
     sort?: string
+    bulk?: string
+    bulkAction?: string
+    bulkError?: string
   }>
 }) {
   const viewer = await requireAdmin()
@@ -175,6 +179,17 @@ export default async function ContentPage({
           {created} was saved as a draft.
         </div>
       )}
+      {filters.bulk && (
+        <div className="clientSuccess" role="status">
+          <CheckCircle2 size={16} aria-hidden="true" />
+          {filters.bulk} content items were updated.
+        </div>
+      )}
+      {filters.bulkError && (
+        <div className="accessNotice" role="alert">
+          Select at least one content item before applying a bulk action.
+        </div>
+      )}
 
       <section className="contentViewBar">
         <nav aria-label="Quick content views">
@@ -263,66 +278,77 @@ export default async function ContentPage({
           </p>
         </section>
       ) : (
-        <section className="contentDirectory">
-          <div className="contentDirectoryHeading">
-            <span>{items.length} of {allItems.length} content items</span>
-            <span>Platforms</span>
-            <span>Schedule</span>
-            <span>Status</span>
-          </div>
+        <BulkContentForm itemCount={items.length}>
+          <section className="contentDirectory contentDirectoryBulk">
+            <div className="contentDirectoryHeading">
+              <span aria-hidden="true" />
+              <span>{items.length} of {allItems.length} content items</span>
+              <span>Platforms</span>
+              <span>Schedule</span>
+              <span>Status</span>
+            </div>
 
-          {items.map((item) => (
-            <article className="contentRow" key={item.id}>
-              <div className="contentIdentity">
-                <span style={{ backgroundColor: item.clientColor }}>
-                  {item.clientName.charAt(0)}
-                </span>
-                <div>
-                  <strong>{item.title}</strong>
-                  <small>
-                    {item.clientName}
-                    <i aria-hidden="true">·</i>
-                    {getContentTypeLabel(item.contentType)}
-                  </small>
+            {items.map((item) => (
+              <article className="contentRow" key={item.id}>
+                <label className="contentBulkCheckbox">
+                  <input
+                    type="checkbox"
+                    name="contentIds"
+                    value={item.id}
+                    aria-label={`Select ${item.title}`}
+                  />
+                </label>
+                <div className="contentIdentity">
+                  <span style={{ backgroundColor: item.clientColor }}>
+                    {item.clientName.charAt(0)}
+                  </span>
+                  <div>
+                    <strong>{item.title}</strong>
+                    <small>
+                      {item.clientName}
+                      <i aria-hidden="true">·</i>
+                      {getContentTypeLabel(item.contentType)}
+                    </small>
+                  </div>
                 </div>
-              </div>
 
-              <div className="contentPlatforms">
-                <Layers3 size={14} aria-hidden="true" />
-                <span>
-                  {item.platforms
-                    .map((platform) => SOCIAL_PLATFORM_LABELS[platform])
-                    .join(', ')}
+                <div className="contentPlatforms">
+                  <Layers3 size={14} aria-hidden="true" />
+                  <span>
+                    {item.platforms
+                      .map((platform) => SOCIAL_PLATFORM_LABELS[platform])
+                      .join(', ')}
+                  </span>
+                </div>
+
+                <div className="contentSchedule">
+                  <CalendarClock size={14} aria-hidden="true" />
+                  <span>
+                    {item.scheduledDate
+                      ? `${item.scheduledDate}${
+                          item.scheduledTime
+                            ? ` · ${item.scheduledTime.slice(0, 5)}`
+                            : ''
+                        }`
+                      : 'Not planned'}
+                  </span>
+                </div>
+
+                <span className={`contentStatus is-${item.status}`}>
+                  {CONTENT_STATUS_LABELS[item.status]}
                 </span>
-              </div>
 
-              <div className="contentSchedule">
-                <CalendarClock size={14} aria-hidden="true" />
-                <span>
-                  {item.scheduledDate
-                    ? `${item.scheduledDate}${
-                        item.scheduledTime
-                          ? ` · ${item.scheduledTime.slice(0, 5)}`
-                          : ''
-                      }`
-                    : 'Not planned'}
-                </span>
-              </div>
-
-              <span className={`contentStatus is-${item.status}`}>
-                {CONTENT_STATUS_LABELS[item.status]}
-              </span>
-
-              <Link
-                className="contentOpenLink"
-                href={`/hub/content/${item.id}`}
-                aria-label={`Open ${item.title}`}
-              >
-                <ArrowUpRight size={17} aria-hidden="true" />
-              </Link>
-            </article>
-          ))}
-        </section>
+                <Link
+                  className="contentOpenLink"
+                  href={`/hub/content/${item.id}`}
+                  aria-label={`Open ${item.title}`}
+                >
+                  <ArrowUpRight size={17} aria-hidden="true" />
+                </Link>
+              </article>
+            ))}
+          </section>
+        </BulkContentForm>
       )}
     </div>
   )
