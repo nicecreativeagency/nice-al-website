@@ -1213,7 +1213,7 @@
   font-size: 9px;
 }
 
-.clientRow > button {
+.clientRow > a {
   width: 32px;
   height: 32px;
   display: grid;
@@ -1222,6 +1222,220 @@
   border-radius: 8px;
   background: white;
   color: #7c7c75;
+  transition:
+    border-color 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+.clientRow > a:hover {
+  border-color: #bdbdb5;
+  color: var(--hub-ink);
+  transform: translateY(-1px);
+}
+
+.clientBackLink {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 34px;
+  color: #898981;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.clientBackLink:hover {
+  color: var(--hub-ink);
+}
+
+.clientWorkspaceHeader {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 38px;
+}
+
+.clientWorkspaceHeader > span {
+  width: 62px;
+  height: 62px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  color: white;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.clientWorkspaceHeader > div {
+  display: grid;
+}
+
+.clientWorkspaceHeader p {
+  margin: 0 0 4px;
+  color: #999991;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.clientWorkspaceHeader h1 {
+  margin: 0;
+  font-size: clamp(30px, 4vw, 48px);
+  font-weight: 600;
+  letter-spacing: -0.055em;
+  line-height: 1.05;
+}
+
+.clientWorkspaceHeader small {
+  margin-top: 5px;
+  color: #9a9a92;
+  font-size: 9px;
+}
+
+.clientSettingsForm {
+  overflow: hidden;
+  border: 1px solid var(--hub-line);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.clientSettingsSection {
+  display: grid;
+  grid-template-columns: minmax(210px, 0.65fr) minmax(0, 1.35fr);
+  gap: 48px;
+  padding: 30px;
+}
+
+.clientSettingsSection + .clientSettingsSection {
+  border-top: 1px solid var(--hub-line);
+}
+
+.clientSettingsSection > div:first-child p {
+  margin: 0 0 6px;
+  color: var(--hub-ink);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.clientSettingsSection > div:first-child span,
+.clientSettingsActions > span {
+  color: #92928a;
+  font-size: 9px;
+  line-height: 1.6;
+}
+
+.clientSettingsFields {
+  display: grid;
+  gap: 20px;
+}
+
+.clientSettingsSplit {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.clientSettingsForm label {
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.clientSettingsForm label > span {
+  color: #55554f;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.clientSettingsForm input,
+.clientSettingsForm select {
+  width: 100%;
+  height: 44px;
+  padding: 0 13px;
+  border: 1px solid #d8d8d1;
+  border-radius: 9px;
+  outline: none;
+  background: #fbfbf8;
+  color: var(--hub-ink);
+  font-size: 11px;
+}
+
+.clientSettingsForm input:focus,
+.clientSettingsForm select:focus {
+  border-color: #8a8a82;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(17, 17, 15, 0.05);
+}
+
+.clientSettingsForm input[aria-invalid='true'] {
+  border-color: #d98270;
+}
+
+.clientSettingsForm label small {
+  color: #b44631;
+  font-size: 9px;
+}
+
+.clientSettingsForm label em {
+  color: #9a9a92;
+  font-size: 8px;
+  font-style: normal;
+}
+
+.lockedField {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid #e1e1da;
+  border-radius: 9px;
+  background: #f2f2ed;
+}
+
+.lockedField > span {
+  padding-left: 13px;
+  color: #aaa9a2;
+  font-size: 10px;
+}
+
+.lockedField input {
+  border: 0;
+  background: transparent;
+  color: #777770;
+}
+
+.clientSettingsForm .colorField input[type='text'] {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  text-transform: lowercase;
+}
+
+.clientSettingsActions {
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 0 30px;
+  border-top: 1px solid var(--hub-line);
+  background: #f4f4ef;
+}
+
+.clientSettingsActions button {
+  min-height: 40px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--hub-ink);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.clientSettingsActions button:disabled {
+  cursor: wait;
+  opacity: 0.62;
 }
 
 @media (max-width: 1120px) {
@@ -1353,6 +1567,15 @@
     grid-template-columns: 1fr;
   }
 
+  .clientSettingsSection {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .clientSettingsSplit {
+    grid-template-columns: 1fr;
+  }
+
   .directoryHeading {
     display: none;
   }
@@ -1390,6 +1613,20 @@
 
   .hubPageHeader h1 {
     font-size: 36px;
+  }
+
+  .clientSettingsSection {
+    padding: 22px;
+  }
+
+  .clientSettingsActions {
+    align-items: flex-end;
+    flex-direction: column;
+    padding: 18px 22px;
+  }
+
+  .clientSettingsActions button {
+    width: 100%;
   }
 
   .metricGrid {

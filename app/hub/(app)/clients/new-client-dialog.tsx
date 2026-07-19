@@ -6,6 +6,7 @@ import {
   createClientAction,
   type CreateClientState,
 } from '@/app/hub/(app)/clients/actions'
+import { CLIENT_TIMEZONE_OPTIONS } from '@/lib/client-settings'
 
 const initialState: CreateClientState = {}
 
@@ -106,11 +107,11 @@ export function NewClientDialog() {
             <label>
               <span>Timezone</span>
               <select name="timezone" defaultValue="Europe/Belgrade">
-                <option value="Europe/Belgrade">Republic of Kosova</option>
-                <option value="Europe/Tirane">Tirana</option>
-                <option value="Europe/Berlin">Berlin</option>
-                <option value="Europe/London">London</option>
-                <option value="America/New_York">New York</option>
+                {CLIENT_TIMEZONE_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
               </select>
             </label>
           </div>

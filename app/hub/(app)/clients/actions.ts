@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { requireAdmin } from '@/lib/dal'
 import { db } from '@/lib/db'
 import { client } from '@/lib/db/schema'
+import { CLIENT_TIMEZONE_VALUES } from '@/lib/client-settings'
 
 const createClientSchema = z.object({
   name: z
@@ -22,13 +23,7 @@ const createClientSchema = z.object({
     .string()
     .trim()
     .regex(/^#[0-9a-fA-F]{6}$/, 'Choose a valid brand color.'),
-  timezone: z.enum([
-    'Europe/Belgrade',
-    'Europe/Tirane',
-    'Europe/Berlin',
-    'Europe/London',
-    'America/New_York',
-  ]),
+  timezone: z.enum(CLIENT_TIMEZONE_VALUES),
 })
 
 export type CreateClientState = {

@@ -1,15 +1,9 @@
+import Link from 'next/link'
 import { ArrowUpRight, Building2, CheckCircle2, Globe2 } from 'lucide-react'
 import { requireAdmin } from '@/lib/dal'
+import { getClientTimezoneLabel } from '@/lib/client-settings'
 import { PageHeader } from '@/app/hub/components/page-header'
 import { NewClientDialog } from '@/app/hub/(app)/clients/new-client-dialog'
-
-const timezoneLabels: Record<string, string> = {
-  'Europe/Belgrade': 'Republic of Kosova',
-  'Europe/Tirane': 'Albania',
-  'Europe/Berlin': 'Germany',
-  'Europe/London': 'United Kingdom',
-  'America/New_York': 'New York',
-}
 
 export default async function ClientsPage({
   searchParams,
@@ -63,11 +57,14 @@ export default async function ClientsPage({
             </span>
             <span className="clientTimezone">
               <Globe2 size={15} aria-hidden="true" />
-              {timezoneLabels[currentClient.timezone] ?? currentClient.timezone}
+              {getClientTimezoneLabel(currentClient.timezone)}
             </span>
-            <button type="button" disabled aria-label={`Open ${currentClient.name}`}>
+            <Link
+              href={`/hub/clients/${currentClient.id}`}
+              aria-label={`Open ${currentClient.name}`}
+            >
               <ArrowUpRight size={17} aria-hidden="true" />
-            </button>
+            </Link>
           </article>
         ))}
       </section>
