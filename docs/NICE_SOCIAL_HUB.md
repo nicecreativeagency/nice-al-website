@@ -213,6 +213,31 @@ The pre-publishing workflow now includes:
 9. Publishing-readiness checks for media, captions, platforms, date and time.
 10. Role-scoped dashboard metrics and client portal views.
 
+## Monochrome workflow refinement
+
+The application UI now uses a larger, bolder black-and-white product system.
+Client brand colors remain visible only where they help identify a workspace;
+uploaded creatives retain their original colors.
+
+Workflow improvements include:
+
+- Advanced content search and URL-based filters for client, content type,
+  approval status, platform, schedule state and sort order.
+- Agency quick views for waiting approvals, upcoming work, unplanned content and
+  requested changes.
+- Client workspace switching directly above the admin calendar.
+- Click-to-expand creative previews across content, approvals and guest reviews.
+- A WordPress-style media inspector with metadata, usage references, direct URL
+  copy and a large preview.
+- A three-stage approval workflow with a clear next action and readiness issues.
+- Separate version and activity timelines.
+- Compact distribution controls and tabbed platform-specific captions.
+- Whole-field date and time picker activation.
+- Draft duplication for repeated formats and recurring campaign work.
+
+Desktop and mobile layouts were checked for horizontal overflow. All new
+queries retain organization-level and client-level server authorization.
+
 ## Deferred publishing integrations
 
 Direct publishing remains intentionally deferred. The next integration phase is:

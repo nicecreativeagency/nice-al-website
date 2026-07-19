@@ -112,6 +112,29 @@ export default async function CalendarPage({
         title="Calendar"
         description="All planned content, approvals and publishing dates in one place."
       />
+      {viewer.role !== 'client' ? (
+        <section className="calendarClientSwitcher">
+          <strong>Client workspace</strong>
+          <nav aria-label="Filter calendar by client">
+            <Link
+              className={!requestedClient ? 'active' : ''}
+              href={query({ client: '' })}
+            >
+              All clients
+            </Link>
+            {viewer.clients.map((item) => (
+              <Link
+                key={item.id}
+                className={requestedClient === item.id ? 'active' : ''}
+                href={query({ client: item.id })}
+              >
+                <i style={{ backgroundColor: item.brandColor }} />
+                {item.name}
+              </Link>
+            ))}
+          </nav>
+        </section>
+      ) : null}
       <section className="calendarToolbar">
         <div className="calendarPeriod">
           <Link href={query({ month: shiftMonth(selectedMonth, -1) })} aria-label="Previous month">

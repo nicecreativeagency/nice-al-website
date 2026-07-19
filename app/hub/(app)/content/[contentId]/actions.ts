@@ -316,3 +316,97 @@ export async function updateContentAction(
   revalidatePath(`/hub/content/${contentId}`)
   redirect(`/hub/content/${contentId}?saved=1`)
 }
+
+export async function duplicateContentAction(contentId: string) {
+  const viewer = await requireAdmin()
+  const [source] = await db
+    .select()
+    .from(contentItem)
+    .where(
+      and(
+        eq(contentItem.id, contentId),
+        eq(contentItem.organizationId, viewer.organization.id),
+      ),
+    )
+    .limit(1)
+  if (!source) redirect('/hub/content')
+
+  const [targets, media] = await Promise.all([
+    db
+      .select({
+        platform: contentPlatformTarget.platform,
+        caption: contentPlatformTarget.caption,
+      })
+      .from(contentPlatformTarget)
+      .where(eq(contentPlatformTarget.contentItemId, contentId)),
+    db
+      .select({
+        mediaAssetId: mediaAsset.id,
+        secureUrl: mediaAsset.secureUrl,
+        resourceType: mediaAsset.resourceType,
+        sortOrder: contentMedia.sortOrder,
+      })
+      .from(contentMedia)
+      .innerJoin(mediaAsset, eq(mediaAsset.id, contentMedia.mediaAssetId))
+      .where(eq(contentMedia.contentItemId, contentId)),
+  ])
+  const newId = crypto.randomUUID()
+  const title = `Copy of ${source.title}`.slice(0, 140)
+
+  await db.insert(contentItem).values({
+    id: newId,
+    organizationId: viewer.organization.id,
+    clientId: source.clientId,
+    campaignId: source.campaignId,
+    createdByUserId: viewer.user.id,
+    title,
+    contentType: source.contentType,
+    status: 'draft',
+    caption: source.caption,
+    scheduledDate: null,
+    scheduledTime: null,
+    timezone: source.timezone,
+    currentVersion: 1,
+  })
+  if (targets.length) {
+    await db.insert(contentPlatformTarget).values(
+      targets.map((target) => ({
+        id: crypto.randomUUID(),
+        contentItemId: newId,
+        platform: target.platform,
+        caption: target.caption,
+      })),
+    )
+  }
+  if (media.length) {
+    await db.insert(contentMedia).values(
+      media.map((asset) => ({
+        id: crypto.randomUUID(),
+        contentItemId: newId,
+        mediaAssetId: asset.mediaAssetId,
+        sortOrder: asset.sortOrder,
+      })),
+    )
+  }
+  await db.insert(contentVersion).values({
+    id: crypto.randomUUID(),
+    contentItemId: newId,
+    versionNumber: 1,
+    createdByUserId: viewer.user.id,
+    title,
+    contentType: source.contentType,
+    caption: source.caption,
+    platformSnapshot: targets,
+    mediaSnapshot: media,
+  })
+  await recordActivity({
+    organizationId: viewer.organization.id,
+    clientId: source.clientId,
+    contentItemId: newId,
+    actor: { id: viewer.user.id, name: viewer.user.name },
+    action: 'content.duplicated',
+    metadata: { sourceContentId: source.id, title },
+  })
+  revalidatePath('/hub/content')
+  redirect(`/hub/content/${newId}`)
+}

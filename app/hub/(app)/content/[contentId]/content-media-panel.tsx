@@ -8,6 +8,7 @@ import {
   createMediaUploadSignatureAction,
   removeMediaAttachmentAction,
 } from '@/app/hub/(app)/content/[contentId]/media-actions'
+import { MediaLightbox } from '@/app/hub/components/media-lightbox'
 
 type AttachedMedia = {
   attachmentId: string
@@ -210,7 +211,7 @@ export function ContentMediaPanel({
                 {asset.resourceType === 'video' ? (
                   <video src={asset.secureUrl} controls preload="metadata" />
                 ) : (
-                  <img
+                  <MediaLightbox
                     src={asset.secureUrl}
                     alt={asset.originalFilename || 'Content creative'}
                   />

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { and, asc, desc, eq } from 'drizzle-orm'
-import { ArrowLeft, CheckCircle2, FileText } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, Copy, FileText } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import {
   CONTENT_STATUS_LABELS,
@@ -25,6 +25,8 @@ import {
 import { EditContentForm } from '@/app/hub/(app)/content/[contentId]/edit-content-form'
 import { ContentMediaPanel } from '@/app/hub/(app)/content/[contentId]/content-media-panel'
 import { ApprovalWorkflowPanel } from '@/app/hub/(app)/content/[contentId]/approval-workflow-panel'
+import { ContentHistoryPanel } from '@/app/hub/(app)/content/[contentId]/content-history-panel'
+import { duplicateContentAction } from '@/app/hub/(app)/content/[contentId]/actions'
 
 export default async function ContentWorkspacePage({
   params,
@@ -164,9 +166,14 @@ export default async function ContentWorkspacePage({
           </p>
           <h1>{currentContent.title}</h1>
         </div>
-        <span className={`contentStatus is-${currentContent.status}`}>
-          {CONTENT_STATUS_LABELS[currentContent.status as ContentStatus]}
-        </span>
+        <div className="contentHeaderActions">
+          <span className={`contentStatus is-${currentContent.status}`}>
+            {CONTENT_STATUS_LABELS[currentContent.status as ContentStatus]}
+          </span>
+          <form action={duplicateContentAction.bind(null, currentContent.id)}>
+            <button type="submit"><Copy size={16} /> Duplicate</button>
+          </form>
+        </div>
       </div>
 
       {saved && (
@@ -186,32 +193,16 @@ export default async function ContentWorkspacePage({
           latestApproval={latestApproval ?? null}
           readiness={readiness}
         />
-        <aside className="versionActivityPanel">
-          <details open>
-            <summary>
-              Version history <span>{versions.length}</span>
-            </summary>
-            {versions.map((version) => (
-              <div key={version.id}>
-                <strong>Version {version.versionNumber}</strong>
-                <small>{version.title}</small>
-                <time>{version.createdAt.toLocaleDateString('en-GB')}</time>
-              </div>
-            ))}
-          </details>
-          <details>
-            <summary>
-              Activity <span>{activity.length}</span>
-            </summary>
-            {activity.map((event) => (
-              <div key={event.id}>
-                <strong>{event.actorName}</strong>
-                <small>{event.action.replaceAll('.', ' ')}</small>
-                <time>{event.createdAt.toLocaleDateString('en-GB')}</time>
-              </div>
-            ))}
-          </details>
-        </aside>
+        <ContentHistoryPanel
+          versions={versions.map((version) => ({
+            ...version,
+            createdAt: version.createdAt.toISOString(),
+          }))}
+          activity={activity.map((event) => ({
+            ...event,
+            createdAt: event.createdAt.toISOString(),
+          }))}
+        />
       </div>
 
       <EditContentForm

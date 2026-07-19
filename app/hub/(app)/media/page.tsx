@@ -1,14 +1,17 @@
-import Image from 'next/image'
-import { count, desc, eq } from 'drizzle-orm'
-import { FileImage, FolderOpen } from 'lucide-react'
+import { desc, eq } from 'drizzle-orm'
+import { FolderOpen } from 'lucide-react'
 import { requireAdmin } from '@/lib/dal'
 import { db } from '@/lib/db'
-import { client, contentMedia, mediaAsset } from '@/lib/db/schema'
+import { client, contentItem, contentMedia, mediaAsset } from '@/lib/db/schema'
 import { PageHeader } from '@/app/hub/components/page-header'
+import {
+  MediaLibrary,
+  type MediaLibraryAsset,
+} from '@/app/hub/(app)/media/media-library'
 
 export default async function MediaPage() {
   const viewer = await requireAdmin()
-  const assets = await db
+  const rows = await db
     .select({
       id: mediaAsset.id,
       url: mediaAsset.secureUrl,
@@ -16,48 +19,70 @@ export default async function MediaPage() {
       filename: mediaAsset.originalFilename,
       format: mediaAsset.format,
       bytes: mediaAsset.bytes,
+      width: mediaAsset.width,
+      height: mediaAsset.height,
       createdAt: mediaAsset.createdAt,
       clientName: client.name,
       clientColor: client.brandColor,
-      usages: count(contentMedia.id),
+      contentId: contentItem.id,
+      contentTitle: contentItem.title,
     })
     .from(mediaAsset)
     .innerJoin(client, eq(client.id, mediaAsset.clientId))
     .leftJoin(contentMedia, eq(contentMedia.mediaAssetId, mediaAsset.id))
+    .leftJoin(contentItem, eq(contentItem.id, contentMedia.contentItemId))
     .where(eq(mediaAsset.organizationId, viewer.organization.id))
-    .groupBy(mediaAsset.id, client.id)
     .orderBy(desc(mediaAsset.createdAt))
+
+  const assets = Array.from(
+    rows.reduce((map, row) => {
+      const existing = map.get(row.id)
+      if (existing) {
+        if (
+          row.contentId &&
+          row.contentTitle &&
+          !existing.usages.some((usage) => usage.id === row.contentId)
+        ) {
+          existing.usages.push({ id: row.contentId, title: row.contentTitle })
+        }
+        return map
+      }
+      map.set(row.id, {
+        id: row.id,
+        url: row.url,
+        resourceType: row.resourceType,
+        filename: row.filename,
+        format: row.format,
+        bytes: row.bytes,
+        width: row.width,
+        height: row.height,
+        createdAt: row.createdAt.toISOString(),
+        clientName: row.clientName,
+        clientColor: row.clientColor,
+        usages:
+          row.contentId && row.contentTitle
+            ? [{ id: row.contentId, title: row.contentTitle }]
+            : [],
+      })
+      return map
+    }, new Map<string, MediaLibraryAsset>()),
+  ).map(([, asset]) => asset)
 
   return (
     <div className="hubPage">
       <PageHeader
-        eyebrow="Final assets"
+        eyebrow="Asset library"
         title="Media"
-        description="Every publishing-ready image and video uploaded across your clients."
+        description="Inspect every final asset, see where it is used and copy its direct link."
       />
       {assets.length === 0 ? (
         <section className="contentEmpty">
-          <span><FolderOpen size={22} /></span>
+          <span><FolderOpen size={24} /></span>
           <h2>No media yet</h2>
           <p>Assets uploaded inside content items will be collected here automatically.</p>
         </section>
       ) : (
-        <section className="mediaLibraryGrid">
-          {assets.map((asset) => (
-            <article key={asset.id}>
-              <div>
-                {asset.resourceType === 'image' ? (
-                  <Image src={asset.url} alt={asset.filename ?? ''} fill sizes="(max-width: 700px) 100vw, 25vw" />
-                ) : (
-                  <video src={asset.url} controls preload="metadata" />
-                )}
-              </div>
-              <span style={{ color: asset.clientColor }}><FileImage size={15} /> {asset.clientName}</span>
-              <strong>{asset.filename ?? `Untitled.${asset.format ?? 'file'}`}</strong>
-              <small>{asset.usages} content use{asset.usages === 1 ? '' : 's'} · {asset.bytes ? `${(asset.bytes / 1024 / 1024).toFixed(1)} MB` : 'Size unavailable'}</small>
-            </article>
-          ))}
-        </section>
+        <MediaLibrary assets={assets} />
       )}
     </div>
   )

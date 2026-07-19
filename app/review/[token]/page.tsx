@@ -13,6 +13,7 @@ import {
   type SocialPlatform,
 } from '@/lib/db/schema'
 import { GuestReviewActions } from '@/app/review/[token]/guest-review-actions'
+import { MediaLightbox } from '@/app/hub/components/media-lightbox'
 
 export default async function GuestReviewPage({
   params,
@@ -97,7 +98,7 @@ export default async function GuestReviewPage({
           <div className="reviewMedia">
             {media.map((asset) => asset.resourceType === 'video'
               ? <video key={asset.id} src={asset.secureUrl} controls />
-              : <img key={asset.id} src={asset.secureUrl} alt={asset.name ?? 'Creative'} />)}
+              : <MediaLightbox key={asset.id} src={asset.secureUrl} alt={asset.name ?? 'Creative'} />)}
           </div>
           <section className="reviewCopy">
             <h2>Caption</h2><p>{review.versionCaption || review.caption || 'No base caption.'}</p>

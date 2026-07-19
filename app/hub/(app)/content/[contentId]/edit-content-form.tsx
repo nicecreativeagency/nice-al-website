@@ -1,6 +1,7 @@
 'use client'
 
 import { useActionState, useState } from 'react'
+import { CalendarDays, Check, Clock3 } from 'lucide-react'
 import {
   CONTENT_TYPE_OPTIONS,
   SOCIAL_PLATFORM_LABELS,
@@ -57,6 +58,8 @@ export function EditContentForm({
   const [customCaptions, setCustomCaptions] = useState(
     content.platforms.some((target) => target.caption !== null),
   )
+  const [activeCaptionPlatform, setActiveCaptionPlatform] =
+    useState<SocialPlatform>(initialPlatforms[0] ?? 'instagram')
   const updateContent = updateContentAction.bind(null, content.id)
   const [state, formAction, isPending] = useActionState(
     updateContent,
@@ -64,11 +67,15 @@ export function EditContentForm({
   )
 
   function togglePlatform(platform: SocialPlatform) {
-    setPlatforms((current) =>
-      current.includes(platform)
+    setPlatforms((current) => {
+      const next = current.includes(platform)
         ? current.filter((item) => item !== platform)
-        : [...current, platform],
-    )
+        : [...current, platform]
+      if (!next.includes(activeCaptionPlatform) && next[0]) {
+        setActiveCaptionPlatform(next[0])
+      }
+      return next
+    })
   }
 
   return (
@@ -160,7 +167,10 @@ export function EditContentForm({
             <legend>Platforms</legend>
             <div>
               {SOCIAL_PLATFORM_VALUES.map((platform) => (
-                <label key={platform}>
+                <label
+                  key={platform}
+                  className={platforms.includes(platform) ? 'selected' : ''}
+                >
                   <input
                     type="checkbox"
                     name="platforms"
@@ -168,6 +178,7 @@ export function EditContentForm({
                     checked={platforms.includes(platform)}
                     onChange={() => togglePlatform(platform)}
                   />
+                  <i><Check size={14} /></i>
                   <span>{SOCIAL_PLATFORM_LABELS[platform]}</span>
                 </label>
               ))}
@@ -194,8 +205,27 @@ export function EditContentForm({
 
           {customCaptions && (
             <div className="captionOverrides">
+              <nav aria-label="Platform captions">
+                {platforms.map((platform) => (
+                  <button
+                    type="button"
+                    key={platform}
+                    className={activeCaptionPlatform === platform ? 'active' : ''}
+                    onClick={() => setActiveCaptionPlatform(platform)}
+                  >
+                    {SOCIAL_PLATFORM_LABELS[platform]}
+                  </button>
+                ))}
+              </nav>
               {platforms.map((platform) => (
-                <label key={platform}>
+                <label
+                  key={platform}
+                  className={
+                    activeCaptionPlatform === platform
+                      ? 'captionPanel active'
+                      : 'captionPanel'
+                  }
+                >
                   <span>{SOCIAL_PLATFORM_LABELS[platform]} caption</span>
                   <textarea
                     name={`caption_${platform}`}
@@ -223,12 +253,16 @@ export function EditContentForm({
         <div className="contentSettingsFields contentSettingsSplit">
           <label>
             <span>Planned date</span>
-            <input
-              name="scheduledDate"
-              type="date"
-              defaultValue={content.scheduledDate ?? ''}
-              aria-invalid={Boolean(state.fields?.scheduledDate)}
-            />
+            <div className="planningInput">
+              <CalendarDays size={18} />
+              <input
+                name="scheduledDate"
+                type="date"
+                defaultValue={content.scheduledDate ?? ''}
+                aria-invalid={Boolean(state.fields?.scheduledDate)}
+                onClick={(event) => event.currentTarget.showPicker?.()}
+              />
+            </div>
             {state.fields?.scheduledDate?.[0] && (
               <small>{state.fields.scheduledDate[0]}</small>
             )}
@@ -236,12 +270,16 @@ export function EditContentForm({
 
           <label>
             <span>Planned time</span>
-            <input
-              name="scheduledTime"
-              type="time"
-              defaultValue={content.scheduledTime?.slice(0, 5) ?? ''}
-              aria-invalid={Boolean(state.fields?.scheduledTime)}
-            />
+            <div className="planningInput">
+              <Clock3 size={18} />
+              <input
+                name="scheduledTime"
+                type="time"
+                defaultValue={content.scheduledTime?.slice(0, 5) ?? ''}
+                aria-invalid={Boolean(state.fields?.scheduledTime)}
+                onClick={(event) => event.currentTarget.showPicker?.()}
+              />
+            </div>
           </label>
         </div>
       </section>

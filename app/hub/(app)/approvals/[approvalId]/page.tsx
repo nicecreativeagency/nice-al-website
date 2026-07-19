@@ -14,6 +14,7 @@ import {
   type SocialPlatform,
 } from '@/lib/db/schema'
 import { InternalReviewActions } from '@/app/hub/(app)/approvals/review-actions'
+import { MediaLightbox } from '@/app/hub/components/media-lightbox'
 
 export default async function ApprovalDetailPage({
   params,
@@ -86,7 +87,7 @@ export default async function ApprovalDetailPage({
               asset.resourceType === 'video' ? (
                 <video key={asset.id} src={asset.secureUrl} controls />
               ) : (
-                <img key={asset.id} src={asset.secureUrl} alt={asset.name ?? 'Creative'} />
+                <MediaLightbox key={asset.id} src={asset.secureUrl} alt={asset.name ?? 'Creative'} />
               ),
             )}
           </div>
