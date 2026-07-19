@@ -189,7 +189,7 @@ export default function Contact() {
             </motion.div>
             <h2 className={styles.successTitle}>Nice. Message sent{name ? `, ${name.split(' ')[0]}` : ''}.</h2>
             <p className={styles.successText}>
-              We read every one ourselves — no bots, no queue. Expect a reply within a day or two.
+              We read every one ourselves. No bots, no queue. Expect a reply within a day or two.
             </p>
             <button className={styles.reset} onClick={() => setSent(false)} data-cursor="hover">
               Send another

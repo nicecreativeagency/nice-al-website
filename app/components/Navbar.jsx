@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import styles from './Navbar.module.css'
+import { HOMEPAGE_SECTIONS } from '../homepage-config'
 
 const NAV_LINKS = [
-  { label: 'Work', href: '#work' },
+  ...(HOMEPAGE_SECTIONS.work ? [{ label: 'Work', href: '#work' }] : []),
   { label: 'What we do', href: '#capabilities' },
   { label: 'About', href: '#about' },
   { label: 'Products', href: '#products' },

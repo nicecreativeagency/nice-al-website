@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from 'react'
 import { motion, useInView } from 'framer-motion'
 import Marquee from './Marquee'
 import styles from './Footer.module.css'
+import { HOMEPAGE_SECTIONS } from '../homepage-config'
 
 const SOCIALS = [
   { label: 'Instagram', url: 'https://instagram.com/nice.al' },
@@ -11,7 +12,7 @@ const SOCIALS = [
 ]
 
 const NAV = [
-  { label: 'Work', href: '#work' },
+  ...(HOMEPAGE_SECTIONS.work ? [{ label: 'Work', href: '#work' }] : []),
   { label: 'What we do', href: '#capabilities' },
   { label: 'About', href: '#about' },
   { label: 'Products', href: '#products' },
@@ -25,7 +26,7 @@ function useLocalTime() {
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
-        timeZone: 'Europe/Tirane',
+        timeZone: 'Europe/Berlin',
       }).format(new Date())
       setTime(t)
     }
@@ -81,9 +82,9 @@ export default function Footer() {
               ))}
             </div>
             <div className={styles.col}>
-              <span className={styles.colTitle}>Local time</span>
+              <span className={styles.colTitle}>Europe/Berlin Time</span>
               <span className={styles.clock}>{time}</span>
-              <span className={styles.place}>Tirana, AL</span>
+              <span className={styles.place}>CET / CEST</span>
             </div>
           </div>
         </motion.div>
@@ -104,7 +105,7 @@ export default function Footer() {
             <path fill="#fff" d="M547.24,132.81c-1.21,0-1.81-.55-1.81-1.66,0-1.01.55-1.61,1.66-1.81l2.11-.3c2.11-.3,3.67-.9,4.68-1.81,1-.9,1.51-2.41,1.51-4.53V36.26c0-1.81-.28-3.07-.83-3.77-.55-.7-1.54-1.11-2.94-1.21l-3.47-.45c-1.11-.2-1.66-.8-1.66-1.81s.55-1.61,1.66-1.81c2.81-.6,5.23-1.31,7.24-2.11,2.01-.8,3.67-1.61,4.98-2.41,1.61-1,2.81-1.51,3.62-1.51,1.11,0,1.66.81,1.66,2.41v99.12c0,2.11.33,3.6.98,4.45.65.86,2.04,1.43,4.15,1.73l3.47.45c1.11.2,1.66.8,1.66,1.81,0,1.11-.6,1.66-1.81,1.66h-26.85Z"/>
           </svg>
 
-          <p className={styles.copy}>&copy; 2017&ndash;2026 NICE.al — Made with care by two.</p>
+          <p className={styles.copy}>&copy; 2017&ndash;2026 NICE.al. Made with care by two.</p>
         </div>
       </div>
     </footer>

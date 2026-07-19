@@ -3,7 +3,7 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import styles from './Statement.module.css'
 
 const TEXT =
-  "We're a two-person studio with a nine-year attention span. We don't scale headcount — we scale care. Iveco, Kia, Sixt, Vodafone, Telekom and Air Jordan trusted the same two hands. That is the whole pitch."
+  "We're a two-person studio with a nine-year attention span. We don't scale head count, we scale care. That is the whole pitch."
 
 const WORDS = TEXT.split(' ')
 

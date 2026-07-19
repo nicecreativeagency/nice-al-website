@@ -36,7 +36,7 @@ export default function Work() {
         animate={headInView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
       >
-        <span className={styles.label}>Selected work — 2020 / 2024</span>
+        <span className={styles.label}>Selected work, 2020 / 2024</span>
         <h2 className={styles.heading}>A short list<br />we&apos;re proud of</h2>
       </motion.div>
 

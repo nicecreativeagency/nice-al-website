@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from 'react'
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import Marquee from './Marquee'
 import styles from './Hero.module.css'
+import { HOMEPAGE_SECTIONS } from '../homepage-config'
 
 const ROTATING = ['brands', 'launches', 'ideas', 'feeds', 'people']
 const CLIENTS = ['Iveco', 'Kia', 'Sixt', 'Vodafone', 'Telekom', 'Air Jordan']
@@ -89,7 +90,7 @@ export default function Hero({ loaded }) {
             animate={loaded ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, delay: 1.4 }}
           >
-            Creative studio — Independent since 2017
+            Creative studio. Independent since 2017
           </motion.p>
 
           <motion.h1
@@ -119,18 +120,20 @@ export default function Hero({ loaded }) {
         </motion.div>
       </motion.div>
 
-      <motion.div
-        className={styles.marqueeWrap}
-        initial={{ opacity: 0 }}
-        animate={loaded ? { opacity: 1 } : {}}
-        transition={{ duration: 1, delay: 2 }}
-      >
-        <span className={styles.marqueeLabel}>Trusted by</span>
-        <Marquee items={CLIENTS} speed={26} />
-      </motion.div>
+      {HOMEPAGE_SECTIONS.trustedBy && (
+        <motion.div
+          className={styles.marqueeWrap}
+          initial={{ opacity: 0 }}
+          animate={loaded ? { opacity: 1 } : {}}
+          transition={{ duration: 1, delay: 2 }}
+        >
+          <span className={styles.marqueeLabel}>Trusted by</span>
+          <Marquee items={CLIENTS} speed={26} />
+        </motion.div>
+      )}
 
       <motion.a
-        href="#work"
+        href={HOMEPAGE_SECTIONS.work ? '#work' : '#studio'}
         className={styles.scrollHint}
         data-cursor="hover"
         initial={{ opacity: 0 }}

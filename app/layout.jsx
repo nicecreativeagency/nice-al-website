@@ -3,11 +3,11 @@ import './globals.css'
 export const metadata = {
   metadataBase: new URL('https://nice.al'),
   title: {
-    default: 'NICE.al — Creative Studio',
-    template: '%s — NICE.al',
+    default: 'NICE.al | Creative Studio',
+    template: '%s | NICE.al',
   },
   description:
-    'NICE is a two-person creative studio. Since 2017 we build brands, campaigns and products for a short, deliberate list of clients — Iveco, Kia, Sixt, Vodafone, Telekom, Air Jordan.',
+    'NICE is a two-person creative studio. Since 2017 we build brands, campaigns and products for a short, deliberate list of clients: Iveco, Kia, Sixt, Vodafone, Telekom, Air Jordan.',
   keywords: ['creative studio', 'branding', 'design', 'NICE', 'nice.al', 'Albania', 'Kosovo'],
   authors: [{ name: 'NICE.al' }],
   icons: {
@@ -16,7 +16,7 @@ export const metadata = {
     apple: '/nice-al-symbol.svg',
   },
   openGraph: {
-    title: 'NICE.al — Creative Studio',
+    title: 'NICE.al | Creative Studio',
     description: 'A two-person creative studio with a nine-year attention span.',
     url: 'https://nice.al',
     siteName: 'NICE.al',
@@ -25,7 +25,7 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'NICE.al — Creative Studio',
+    title: 'NICE.al | Creative Studio',
     description: 'A two-person creative studio with a nine-year attention span.',
   },
 }

@@ -3,6 +3,7 @@ import { motion, useInView, useScroll, useTransform } from 'framer-motion'
 import AnimatedNumber from './AnimatedNumber'
 import { teamImages } from '../data/images'
 import styles from './About.module.css'
+import { HOMEPAGE_SECTIONS } from '../homepage-config'
 
 const STATS = [
   { value: 9, suffix: ' yrs', label: 'Independent' },
@@ -52,7 +53,7 @@ const MEMBERS = [
     role: 'Creative Director / Founder',
     tag: '@erzen',
     img: teamImages.erzen,
-    bio: 'Runs the studio and shoots the content. 35,000+ followers across Instagram, TikTok, Facebook and YouTube — and an eye for what makes people stop scrolling.',
+    bio: 'Runs the studio and shoots the content. 35,000+ followers across Instagram, TikTok, Facebook and YouTube, with an eye for what makes people stop scrolling.',
     socials: [
       { label: 'Instagram', url: 'https://instagram.com/erzen' },
       { label: 'TikTok', url: 'https://tiktok.com/@erzen' },
@@ -64,7 +65,7 @@ const MEMBERS = [
     role: 'Art Director / Founder',
     tag: '@theinfinityofspace',
     img: teamImages.luisa,
-    bio: 'The hand behind the art. Her illustrations pull 200K+ monthly views on Pinterest and get pinned around the world — a style you can spot from across the room.',
+    bio: 'The hand behind the art. Her illustrations pull 200K+ monthly views on Pinterest and get pinned around the world, a style you can spot from across the room.',
     socials: [
       { label: 'Instagram', url: 'https://instagram.com/theinfinityofspace' },
       { label: 'Pinterest', url: 'https://pinterest.com/theinfinityofspace' },
@@ -88,28 +89,32 @@ export default function About() {
         <h2 className={styles.heading}>A studio you can<br />count on one hand.</h2>
       </motion.div>
 
-      <div className={styles.team}>
-        {MEMBERS.map((member, i) => (
-          <Member key={member.name} member={member} index={i} inView={inView} />
-        ))}
-      </div>
+      {HOMEPAGE_SECTIONS.teamDetails && (
+        <>
+          <div className={styles.team}>
+            {MEMBERS.map((member, i) => (
+              <Member key={member.name} member={member} index={i} inView={inView} />
+            ))}
+          </div>
 
-      <div className={styles.stats}>
-        {STATS.map((stat, i) => (
-          <motion.div
-            key={stat.label}
-            className={styles.stat}
-            initial={{ opacity: 0, y: 30 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.7, delay: 0.3 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <span className={styles.statValue}>
-              <AnimatedNumber value={stat.value} suffix={stat.suffix} />
-            </span>
-            <span className={styles.statLabel}>{stat.label}</span>
-          </motion.div>
-        ))}
-      </div>
+          <div className={styles.stats}>
+            {STATS.map((stat, i) => (
+              <motion.div
+                key={stat.label}
+                className={styles.stat}
+                initial={{ opacity: 0, y: 30 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.7, delay: 0.3 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <span className={styles.statValue}>
+                  <AnimatedNumber value={stat.value} suffix={stat.suffix} />
+                </span>
+                <span className={styles.statLabel}>{stat.label}</span>
+              </motion.div>
+            ))}
+          </div>
+        </>
+      )}
     </section>
   )
 }

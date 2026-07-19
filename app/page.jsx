@@ -15,6 +15,7 @@ import Products from './components/Products'
 import Philosophy from './components/Philosophy'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
+import { HOMEPAGE_SECTIONS } from './homepage-config'
 
 export default function Home() {
   const [loaded, setLoaded] = useState(false)
@@ -29,7 +30,7 @@ export default function Home() {
       <main>
         <Hero loaded={loaded} />
         <Statement />
-        <Work />
+        {HOMEPAGE_SECTIONS.work && <Work />}
         <Capabilities />
         <About />
         <Products />

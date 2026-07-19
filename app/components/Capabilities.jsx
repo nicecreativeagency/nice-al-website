@@ -5,7 +5,7 @@ import { capabilityImages } from '../data/images'
 import styles from './Capabilities.module.css'
 
 const CAPABILITIES = [
-  { title: 'Brand Identity', desc: 'Logos, systems and guidelines — the bones a brand stands on.', img: capabilityImages.branding },
+  { title: 'Brand Identity', desc: 'Logos, systems and guidelines, the bones a brand stands on.', img: capabilityImages.branding },
   { title: 'Digital & Web', desc: 'Sites and interfaces that feel as good as they look.', img: capabilityImages.digital },
   { title: 'Content & Social', desc: 'Scroll-stopping content for feeds that never sleep.', img: capabilityImages.content },
   { title: 'Art & Illustration', desc: 'Hand-drawn worlds with a signature that is unmistakably ours.', img: capabilityImages.art },

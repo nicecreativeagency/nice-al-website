@@ -48,7 +48,7 @@ export default async function CampaignsPage() {
               <div>
                 <small>{item.clientName}</small>
                 <h2>{item.name}</h2>
-                <p><CalendarRange size={13} /> {item.startDate ?? 'No start'} — {item.endDate ?? 'Open'}</p>
+                <p><CalendarRange size={13} /> {item.startDate ?? 'No start'} to {item.endDate ?? 'Open'}</p>
               </div>
               <footer>
                 <span>{item.itemCount} content items</span>

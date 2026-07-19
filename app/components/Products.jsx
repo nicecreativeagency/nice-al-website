@@ -21,10 +21,10 @@ const PRODUCTS = [
     img: productImages.dizajmeri,
   },
   {
-    name: 'Untitled',
+    name: 'www.maro.al',
     tagline: 'Coming soon.',
     description: "Something we've wanted to build for years. Almost ready.",
-    url: null,
+    url: 'https://www.maro.al',
     status: 'soon',
     img: null,
   },

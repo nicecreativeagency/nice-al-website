@@ -54,7 +54,7 @@ export default function Preloader({ onDone }) {
           </motion.div>
 
           <div className={styles.meta}>
-            <span className={styles.tag}>Creative Studio — Est. 2017</span>
+            <span className={styles.tag}>Creative Studio. Est. 2017</span>
             <span className={styles.count}>{String(count).padStart(3, '0')}</span>
           </div>
 
