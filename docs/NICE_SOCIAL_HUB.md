@@ -241,6 +241,9 @@ The pre-publishing workflow now includes:
     one-step content-creation shortcut and organization-scoped search across
     clients, campaigns and content. Client users receive navigation-only
     results.
+22. A global notification center shows the latest user-scoped approval,
+    feedback and publishing events from every page, with unread badges,
+    deep-links and individual or bulk read controls.
 
 ## Monochrome workflow refinement
 

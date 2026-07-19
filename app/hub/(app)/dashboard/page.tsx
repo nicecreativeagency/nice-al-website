@@ -12,7 +12,7 @@ import { requireViewer } from '@/lib/dal'
 import { db } from '@/lib/db'
 import { client, contentItem, notification } from '@/lib/db/schema'
 import { PageHeader } from '@/app/hub/components/page-header'
-import { markAllNotificationsReadAction } from '@/app/hub/(app)/dashboard/actions'
+import { markAllNotificationsReadFormAction } from '@/app/hub/notification-actions'
 
 export default async function DashboardPage({
   searchParams,
@@ -100,7 +100,7 @@ export default async function DashboardPage({
           <div className="notificationPanelHeader">
             <p>Recent notifications</p>
             {unreadNotices > 0 && (
-              <form action={markAllNotificationsReadAction}>
+              <form action={markAllNotificationsReadFormAction}>
                 <button type="submit">Mark all read</button>
               </form>
             )}

@@ -1,11 +1,12 @@
 'use client'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   Archive,
+  Bell,
   CalendarDays,
   CheckCircle2,
   ChevronDown,
@@ -25,6 +26,7 @@ import {
 import type { Viewer } from '@/lib/dal'
 import { signOutAction } from '@/app/hub/actions'
 import { CommandPalette } from '@/app/hub/components/command-palette'
+import { NotificationCenter } from '@/app/hub/components/notification-center'
 
 type NavigationItem = {
   label: string
@@ -60,9 +62,20 @@ export function HubShell({
   const pathname = usePathname()
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const [isCommandOpen, setIsCommandOpen] = useState(false)
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false)
+  const [unreadCount, setUnreadCount] = useState(viewer.unreadNotifications)
   const setCommandOpen = useCallback((open: boolean) => {
+    if (open) setIsNotificationOpen(false)
     setIsCommandOpen(open)
   }, [])
+  const setNotificationOpen = useCallback((open: boolean) => {
+    if (open) setIsCommandOpen(false)
+    setIsNotificationOpen(open)
+  }, [])
+
+  useEffect(() => {
+    setUnreadCount(viewer.unreadNotifications)
+  }, [viewer.unreadNotifications])
   const isAdmin = viewer.role !== 'client'
   const navigation = isAdmin ? adminNavigation : clientNavigation
   const initials = viewer.user.name
@@ -79,6 +92,15 @@ export function HubShell({
           <span>Social Hub</span>
         </Link>
         <div>
+          <button
+            aria-label={`Notifications${unreadCount ? `, ${unreadCount} unread` : ''}`}
+            className="hubMobileNotification"
+            onClick={() => setNotificationOpen(true)}
+            type="button"
+          >
+            <Bell aria-hidden="true" size={20} />
+            {unreadCount ? <small>{Math.min(unreadCount, 99)}</small> : null}
+          </button>
           <button
             aria-label="Search Social Hub"
             onClick={() => setIsCommandOpen(true)}
@@ -139,18 +161,33 @@ export function HubShell({
           <ChevronDown size={15} aria-hidden="true" />
         </div>
 
-        <button
-          className="hubCommandTrigger"
-          onClick={() => {
-            setIsMobileOpen(false)
-            setIsCommandOpen(true)
-          }}
-          type="button"
-        >
-          <Search aria-hidden="true" size={16} />
-          <span>Search</span>
-          <kbd>Ctrl K</kbd>
-        </button>
+        <div className="hubUtilityButtons">
+          <button
+            className="hubCommandTrigger"
+            onClick={() => {
+              setIsMobileOpen(false)
+              setCommandOpen(true)
+            }}
+            type="button"
+          >
+            <Search aria-hidden="true" size={16} />
+            <span>Search</span>
+            <kbd>Ctrl K</kbd>
+          </button>
+          <button
+            aria-label={`Notifications${unreadCount ? `, ${unreadCount} unread` : ''}`}
+            className="hubNotificationTrigger"
+            onClick={() => {
+              setIsMobileOpen(false)
+              setNotificationOpen(true)
+            }}
+            type="button"
+          >
+            <Bell aria-hidden="true" size={16} />
+            <span>Notifications</span>
+            {unreadCount ? <small>{Math.min(unreadCount, 99)}</small> : null}
+          </button>
+        </div>
 
         <nav className="hubNavigation" aria-label="Social Hub navigation">
           <p>Workspace</p>
@@ -210,6 +247,11 @@ export function HubShell({
         navigation={navigation.map(({ label, href }) => ({ label, href }))}
         onOpenChange={setCommandOpen}
         open={isCommandOpen}
+      />
+      <NotificationCenter
+        onOpenChange={setNotificationOpen}
+        onUnreadChange={setUnreadCount}
+        open={isNotificationOpen}
       />
     </div>
   )
