@@ -16,10 +16,21 @@ type ClientOption = {
   id: string
   name: string
 }
+type CampaignOption = {
+  id: string
+  clientId: string
+  name: string
+}
 
 const initialState: CreateContentState = {}
 
-export function NewContentDialog({ clients }: { clients: ClientOption[] }) {
+export function NewContentDialog({
+  clients,
+  campaigns,
+}: {
+  clients: ClientOption[]
+  campaigns: CampaignOption[]
+}) {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const [state, formAction, isPending] = useActionState(
     createContentAction,
@@ -82,6 +93,18 @@ export function NewContentDialog({ clients }: { clients: ClientOption[] }) {
               </select>
             </label>
           </div>
+
+          <label>
+            <span>Campaign</span>
+            <select name="campaignId" defaultValue="">
+              <option value="">No campaign</option>
+              {campaigns.map((campaign) => (
+                <option key={campaign.id} value={campaign.id}>
+                  {campaign.name}
+                </option>
+              ))}
+            </select>
+          </label>
 
           <label>
             <span>Internal title</span>

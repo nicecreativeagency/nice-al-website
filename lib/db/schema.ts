@@ -4,6 +4,7 @@ import {
   doublePrecision,
   index,
   integer,
+  jsonb,
   pgTable,
   text,
   time,
@@ -147,8 +148,8 @@ export const clientMember = pgTable(
   ],
 )
 
-export const contentItem = pgTable(
-  'content_items',
+export const campaign = pgTable(
+  'campaigns',
   {
     id: text('id').primaryKey(),
     organizationId: text('organization_id')
@@ -160,6 +161,36 @@ export const contentItem = pgTable(
     createdByUserId: text('created_by_user_id').references(() => user.id, {
       onDelete: 'set null',
     }),
+    name: text('name').notNull(),
+    description: text('description').default('').notNull(),
+    startDate: date('start_date'),
+    endDate: date('end_date'),
+    status: text('status').default('active').notNull(),
+    ...timestamps,
+  },
+  (table) => [
+    index('campaigns_organization_id_idx').on(table.organizationId),
+    index('campaigns_client_id_idx').on(table.clientId),
+    index('campaigns_date_idx').on(table.organizationId, table.startDate),
+  ],
+)
+
+export const contentItem = pgTable(
+  'content_items',
+  {
+    id: text('id').primaryKey(),
+    organizationId: text('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    clientId: text('client_id')
+      .notNull()
+      .references(() => client.id, { onDelete: 'restrict' }),
+    campaignId: text('campaign_id').references(() => campaign.id, {
+      onDelete: 'set null',
+    }),
+    createdByUserId: text('created_by_user_id').references(() => user.id, {
+      onDelete: 'set null',
+    }),
     title: text('title').notNull(),
     contentType: text('content_type').default('image_post').notNull(),
     status: text('status').default('draft').notNull(),
@@ -167,11 +198,14 @@ export const contentItem = pgTable(
     scheduledDate: date('scheduled_date'),
     scheduledTime: time('scheduled_time'),
     timezone: text('timezone').notNull(),
+    currentVersion: integer('current_version').default(1).notNull(),
+    approvedVersion: integer('approved_version'),
     ...timestamps,
   },
   (table) => [
     index('content_items_organization_id_idx').on(table.organizationId),
     index('content_items_client_id_idx').on(table.clientId),
+    index('content_items_campaign_id_idx').on(table.campaignId),
     index('content_items_status_idx').on(table.organizationId, table.status),
     index('content_items_schedule_idx').on(
       table.organizationId,
@@ -197,6 +231,44 @@ export const contentPlatformTarget = pgTable(
       table.platform,
     ),
     index('content_platform_targets_item_id_idx').on(table.contentItemId),
+  ],
+)
+
+export const contentVersion = pgTable(
+  'content_versions',
+  {
+    id: text('id').primaryKey(),
+    contentItemId: text('content_item_id')
+      .notNull()
+      .references(() => contentItem.id, { onDelete: 'cascade' }),
+    versionNumber: integer('version_number').notNull(),
+    createdByUserId: text('created_by_user_id').references(() => user.id, {
+      onDelete: 'set null',
+    }),
+    title: text('title').notNull(),
+    contentType: text('content_type').notNull(),
+    caption: text('caption').default('').notNull(),
+    platformSnapshot: jsonb('platform_snapshot').$type<
+      Array<{ platform: string; caption: string | null }>
+    >(),
+    mediaSnapshot: jsonb('media_snapshot').$type<
+      Array<{
+        mediaAssetId: string
+        secureUrl: string
+        resourceType: string
+        sortOrder: number
+      }>
+    >(),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    uniqueIndex('content_versions_item_version_idx').on(
+      table.contentItemId,
+      table.versionNumber,
+    ),
+    index('content_versions_item_id_idx').on(table.contentItemId),
   ],
 )
 
@@ -263,6 +335,157 @@ export const contentMedia = pgTable(
   ],
 )
 
+export const approvalRequest = pgTable(
+  'approval_requests',
+  {
+    id: text('id').primaryKey(),
+    organizationId: text('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    contentItemId: text('content_item_id')
+      .notNull()
+      .references(() => contentItem.id, { onDelete: 'cascade' }),
+    requestedByUserId: text('requested_by_user_id').references(() => user.id, {
+      onDelete: 'set null',
+    }),
+    decidedByUserId: text('decided_by_user_id').references(() => user.id, {
+      onDelete: 'set null',
+    }),
+    versionNumber: integer('version_number').notNull(),
+    status: text('status').default('pending').notNull(),
+    message: text('message').default('').notNull(),
+    reviewerName: text('reviewer_name'),
+    requestedAt: timestamp('requested_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    decidedAt: timestamp('decided_at', { withTimezone: true }),
+    ...timestamps,
+  },
+  (table) => [
+    index('approval_requests_organization_id_idx').on(table.organizationId),
+    index('approval_requests_content_id_idx').on(table.contentItemId),
+    index('approval_requests_status_idx').on(
+      table.organizationId,
+      table.status,
+    ),
+  ],
+)
+
+export const approvalLink = pgTable(
+  'approval_links',
+  {
+    id: text('id').primaryKey(),
+    organizationId: text('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    approvalRequestId: text('approval_request_id')
+      .notNull()
+      .references(() => approvalRequest.id, { onDelete: 'cascade' }),
+    tokenHash: text('token_hash').notNull().unique(),
+    createdByUserId: text('created_by_user_id').references(() => user.id, {
+      onDelete: 'set null',
+    }),
+    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+    revokedAt: timestamp('revoked_at', { withTimezone: true }),
+    lastAccessedAt: timestamp('last_accessed_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index('approval_links_request_id_idx').on(table.approvalRequestId),
+    index('approval_links_organization_id_idx').on(table.organizationId),
+  ],
+)
+
+export const approvalComment = pgTable(
+  'approval_comments',
+  {
+    id: text('id').primaryKey(),
+    organizationId: text('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    contentItemId: text('content_item_id')
+      .notNull()
+      .references(() => contentItem.id, { onDelete: 'cascade' }),
+    approvalRequestId: text('approval_request_id').references(
+      () => approvalRequest.id,
+      { onDelete: 'set null' },
+    ),
+    authorUserId: text('author_user_id').references(() => user.id, {
+      onDelete: 'set null',
+    }),
+    authorName: text('author_name').notNull(),
+    authorRole: text('author_role').notNull(),
+    body: text('body').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index('approval_comments_content_id_idx').on(table.contentItemId),
+    index('approval_comments_request_id_idx').on(table.approvalRequestId),
+  ],
+)
+
+export const activityEvent = pgTable(
+  'activity_events',
+  {
+    id: text('id').primaryKey(),
+    organizationId: text('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    clientId: text('client_id').references(() => client.id, {
+      onDelete: 'set null',
+    }),
+    contentItemId: text('content_item_id').references(() => contentItem.id, {
+      onDelete: 'cascade',
+    }),
+    actorUserId: text('actor_user_id').references(() => user.id, {
+      onDelete: 'set null',
+    }),
+    actorName: text('actor_name').notNull(),
+    action: text('action').notNull(),
+    metadata: jsonb('metadata').$type<Record<string, string | number | boolean>>(),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index('activity_events_organization_id_idx').on(table.organizationId),
+    index('activity_events_content_id_idx').on(table.contentItemId),
+    index('activity_events_created_at_idx').on(
+      table.organizationId,
+      table.createdAt,
+    ),
+  ],
+)
+
+export const notification = pgTable(
+  'notifications',
+  {
+    id: text('id').primaryKey(),
+    organizationId: text('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    recipientUserId: text('recipient_user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    type: text('type').notNull(),
+    title: text('title').notNull(),
+    body: text('body').default('').notNull(),
+    href: text('href'),
+    readAt: timestamp('read_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index('notifications_recipient_id_idx').on(table.recipientUserId),
+    index('notifications_unread_idx').on(table.recipientUserId, table.readAt),
+  ],
+)
+
 export const schema = {
   user,
   session,
@@ -272,10 +495,17 @@ export const schema = {
   organizationMember,
   client,
   clientMember,
+  campaign,
   contentItem,
   contentPlatformTarget,
+  contentVersion,
   mediaAsset,
   contentMedia,
+  approvalRequest,
+  approvalLink,
+  approvalComment,
+  activityEvent,
+  notification,
 }
 
 export type Role = 'super_admin' | 'organization_admin' | 'team_member' | 'client'
@@ -296,3 +526,8 @@ export type ContentType =
   | 'reel'
   | 'story'
 export type SocialPlatform = 'facebook' | 'instagram' | 'linkedin'
+export type ApprovalStatus =
+  | 'pending'
+  | 'approved'
+  | 'changes_requested'
+  | 'cancelled'

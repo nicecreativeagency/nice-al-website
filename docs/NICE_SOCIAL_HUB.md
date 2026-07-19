@@ -115,14 +115,17 @@ full client list.
 | `/hub/clients` | Admin only | Create and list organization clients |
 | `/hub/clients/[clientId]` | Admin only | Edit an organization client workspace |
 | `/hub/content` | Admin only | Create and list content drafts |
-| `/hub/content/[contentId]` | Admin only | Edit content, targets and channel captions |
-| `/hub/campaigns` | Admin only | Milestone placeholder |
-| `/hub/media` | Admin only | Milestone placeholder |
+| `/hub/content/[contentId]` | Admin only | Edit content, media, versions and approval workflow |
+| `/hub/campaigns` | Admin only | Create, edit and inspect grouped content campaigns |
+| `/hub/campaigns/[campaignId]` | Admin only | Campaign details and linked content |
+| `/hub/media` | Admin only | Organization media library with usage counts |
 | `/hub/social-accounts` | Admin only | Future OAuth placeholder |
 | `/hub/settings` | Admin only | Settings placeholder |
-| `/hub/approvals` | Authenticated | Approval milestone placeholder |
-| `/hub/calendar` | Authenticated | Calendar milestone placeholder |
-| `/hub/published` | Authenticated | Client publishing-history placeholder |
+| `/hub/approvals` | Authenticated | Organization/client-scoped approval queue |
+| `/hub/approvals/[approvalId]` | Authenticated | Versioned review, comments and decisions |
+| `/review/[token]` | Secure token | Account-free guest approval and feedback |
+| `/hub/calendar` | Authenticated | Month, week/list-style planning with client filters |
+| `/hub/published` | Authenticated | Client-scoped publishing history |
 | `/api/auth/[...all]` | Better Auth | Auth handler |
 
 `proxy.ts` performs a fast optimistic cookie redirect. Every protected page also
@@ -176,6 +179,10 @@ Expected access:
 4. Deploy the Next.js application.
 5. Add an invite/admin user-provisioning workflow before onboarding real users.
 
+The production build also runs the idempotent Drizzle migration step before
+Next.js compiles. Vercel therefore applies pending migrations using its existing
+`DATABASE_URL` before new application code starts serving traffic.
+
 Development seed accounts are not intended for production.
 
 ## Validation completed
@@ -190,11 +197,27 @@ Development seed accounts are not intended for production.
 - Client denial from admin-only route
 - Responsive dashboard and mobile navigation at 390 px
 
-## Next milestones
+## Content operations release
 
-1. Content versions and reusable media library.
-2. Approval requests, comments and guest review links.
-3. Month/week/list calendar.
-4. Cloudinary media storage and email notifications.
-5. Meta OAuth and publishing adapters.
-6. LinkedIn connection and publishing after API access approval.
+The pre-publishing workflow now includes:
+
+1. Client and campaign management.
+2. Multi-platform content drafts and platform-specific captions.
+3. Signed Cloudinary image/video uploads and a reusable media library.
+4. Immutable content-version snapshots. Editing content or media invalidates an
+   open approval and creates a new version.
+5. Internal and secure guest approval flows.
+6. Approve, request changes and threaded review comments.
+7. Activity history and database-backed in-app notifications.
+8. Organization/client-scoped month and list calendar views.
+9. Publishing-readiness checks for media, captions, platforms, date and time.
+10. Role-scoped dashboard metrics and client portal views.
+
+## Deferred publishing integrations
+
+Direct publishing remains intentionally deferred. The next integration phase is:
+
+1. Resend email delivery for existing notification events.
+2. Meta OAuth, Facebook Pages and Instagram professional-account publishing.
+3. Reliable scheduled background jobs, retries and publishing logs.
+4. LinkedIn OAuth/publishing after product and permission approval.

@@ -141,7 +141,9 @@ export function HubShell({
               >
                 <Icon size={18} aria-hidden="true" />
                 <span>{item.label}</span>
-                {item.label === 'Approvals' ? <small>0</small> : null}
+                {item.label === 'Approvals' && viewer.pendingApprovals > 0 ? (
+                  <small>{viewer.pendingApprovals}</small>
+                ) : null}
               </Link>
             )
           })}

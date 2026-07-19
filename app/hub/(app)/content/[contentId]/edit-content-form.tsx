@@ -19,10 +19,16 @@ type ClientOption = {
   id: string
   name: string
 }
+type CampaignOption = {
+  id: string
+  clientId: string
+  name: string
+}
 
 type EditableContent = {
   id: string
   clientId: string
+  campaignId: string | null
   title: string
   contentType: string
   caption: string
@@ -39,9 +45,11 @@ const initialState: UpdateContentState = {}
 export function EditContentForm({
   content,
   clients,
+  campaigns,
 }: {
   content: EditableContent
   clients: ClientOption[]
+  campaigns: CampaignOption[]
 }) {
   const initialPlatforms = content.platforms.map((target) => target.platform)
   const [platforms, setPlatforms] =
@@ -112,6 +120,18 @@ export function EditContentForm({
               aria-invalid={Boolean(state.fields?.title)}
             />
             {state.fields?.title?.[0] && <small>{state.fields.title[0]}</small>}
+          </label>
+
+          <label>
+            <span>Campaign</span>
+            <select name="campaignId" defaultValue={content.campaignId ?? ''}>
+              <option value="">No campaign</option>
+              {campaigns.map((campaign) => (
+                <option key={campaign.id} value={campaign.id}>
+                  {campaign.name}
+                </option>
+              ))}
+            </select>
           </label>
 
           <label>

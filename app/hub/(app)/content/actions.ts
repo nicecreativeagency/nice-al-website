@@ -11,14 +11,18 @@ import {
 import { requireAdmin } from '@/lib/dal'
 import { db } from '@/lib/db'
 import {
+  campaign,
   client,
   contentItem,
   contentPlatformTarget,
+  contentVersion,
 } from '@/lib/db/schema'
+import { recordActivity } from '@/lib/activity'
 
 const createContentSchema = z
   .object({
     clientId: z.string().trim().min(1, 'Choose a client.'),
+    campaignId: z.string().trim().optional(),
     title: z
       .string()
       .trim()
@@ -71,6 +75,7 @@ export async function createContentAction(
   const viewer = await requireAdmin()
   const parsed = createContentSchema.safeParse({
     clientId: formData.get('clientId'),
+    campaignId: formData.get('campaignId') || undefined,
     title: formData.get('title'),
     contentType: formData.get('contentType'),
     caption: formData.get('caption'),
@@ -107,6 +112,25 @@ export async function createContentAction(
     }
   }
 
+  let selectedCampaignId: string | null = null
+  if (parsed.data.campaignId) {
+    const [selectedCampaign] = await db
+      .select({ id: campaign.id })
+      .from(campaign)
+      .where(
+        and(
+          eq(campaign.id, parsed.data.campaignId),
+          eq(campaign.organizationId, viewer.organization.id),
+          eq(campaign.clientId, selectedClient.id),
+        ),
+      )
+      .limit(1)
+    if (!selectedCampaign) {
+      return { error: 'The selected campaign does not belong to this client.' }
+    }
+    selectedCampaignId = selectedCampaign.id
+  }
+
   const contentItemId = crypto.randomUUID()
 
   try {
@@ -114,6 +138,7 @@ export async function createContentAction(
       id: contentItemId,
       organizationId: viewer.organization.id,
       clientId: selectedClient.id,
+      campaignId: selectedCampaignId,
       createdByUserId: viewer.user.id,
       title: parsed.data.title,
       contentType: parsed.data.contentType,
@@ -131,6 +156,30 @@ export async function createContentAction(
         platform,
       })),
     )
+
+    await db.insert(contentVersion).values({
+      id: crypto.randomUUID(),
+      contentItemId,
+      versionNumber: 1,
+      createdByUserId: viewer.user.id,
+      title: parsed.data.title,
+      contentType: parsed.data.contentType,
+      caption: parsed.data.caption,
+      platformSnapshot: parsed.data.platforms.map((platform) => ({
+        platform,
+        caption: null,
+      })),
+      mediaSnapshot: [],
+    })
+
+    await recordActivity({
+      organizationId: viewer.organization.id,
+      clientId: selectedClient.id,
+      contentItemId,
+      actor: { id: viewer.user.id, name: viewer.user.name },
+      action: 'content.created',
+      metadata: { title: parsed.data.title },
+    })
   } catch (error) {
     await db
       .delete(contentItem)

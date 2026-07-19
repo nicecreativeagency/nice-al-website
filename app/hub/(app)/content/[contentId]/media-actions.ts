@@ -12,9 +12,13 @@ import {
 } from '@/lib/cloudinary'
 import { requireAdmin } from '@/lib/dal'
 import { db } from '@/lib/db'
+import { recordActivity } from '@/lib/activity'
 import {
+  approvalRequest,
   contentItem,
   contentMedia,
+  contentPlatformTarget,
+  contentVersion,
   mediaAsset,
 } from '@/lib/db/schema'
 
@@ -64,6 +68,82 @@ async function getOwnedContent(contentId: string) {
     .limit(1)
 
   return { viewer, ownedContent }
+}
+
+async function recordMediaVersion(
+  contentId: string,
+  viewer: Awaited<ReturnType<typeof requireAdmin>>,
+  clientId: string,
+) {
+  const [item] = await db
+    .select({
+      title: contentItem.title,
+      contentType: contentItem.contentType,
+      caption: contentItem.caption,
+      currentVersion: contentItem.currentVersion,
+    })
+    .from(contentItem)
+    .where(eq(contentItem.id, contentId))
+    .limit(1)
+  if (!item) return
+
+  const [platformSnapshot, mediaSnapshot] = await Promise.all([
+    db
+      .select({
+        platform: contentPlatformTarget.platform,
+        caption: contentPlatformTarget.caption,
+      })
+      .from(contentPlatformTarget)
+      .where(eq(contentPlatformTarget.contentItemId, contentId)),
+    db
+      .select({
+        mediaAssetId: mediaAsset.id,
+        secureUrl: mediaAsset.secureUrl,
+        resourceType: mediaAsset.resourceType,
+        sortOrder: contentMedia.sortOrder,
+      })
+      .from(contentMedia)
+      .innerJoin(mediaAsset, eq(mediaAsset.id, contentMedia.mediaAssetId))
+      .where(eq(contentMedia.contentItemId, contentId)),
+  ])
+  const nextVersion = item.currentVersion + 1
+  await db
+    .update(contentItem)
+    .set({
+      currentVersion: nextVersion,
+      approvedVersion: null,
+      status: 'draft',
+      updatedAt: new Date(),
+    })
+    .where(eq(contentItem.id, contentId))
+  await db
+    .update(approvalRequest)
+    .set({ status: 'cancelled', updatedAt: new Date() })
+    .where(
+      and(
+        eq(approvalRequest.contentItemId, contentId),
+        eq(approvalRequest.status, 'pending'),
+      ),
+    )
+  await db.insert(contentVersion).values({
+    id: crypto.randomUUID(),
+    contentItemId: contentId,
+    versionNumber: nextVersion,
+    createdByUserId: viewer.user.id,
+    title: item.title,
+    contentType: item.contentType,
+    caption: item.caption,
+    platformSnapshot,
+    mediaSnapshot,
+  })
+  await recordActivity({
+    organizationId: viewer.organization.id,
+    clientId,
+    contentItemId: contentId,
+    actor: { id: viewer.user.id, name: viewer.user.name },
+    action: 'content.media_updated',
+    metadata: { version: nextVersion },
+  })
 }
 
 export async function createMediaUploadSignatureAction(
@@ -142,6 +222,7 @@ export async function attachUploadedMediaAction(
   })
 
   try {
+    let attached = false
     let [storedAsset] = await db
       .select({ id: mediaAsset.id })
       .from(mediaAsset)
@@ -200,6 +281,14 @@ export async function attachUploadedMediaAction(
         mediaAssetId: storedAsset.id,
         sortOrder: Number(attachmentCount?.value ?? 0),
       })
+      attached = true
+    }
+    if (attached) {
+      await recordMediaVersion(
+        contentId,
+        viewer,
+        ownedContent.clientId,
+      )
     }
   } catch (error) {
     console.error('Failed to attach uploaded media', error)
@@ -215,12 +304,12 @@ export async function removeMediaAttachmentAction(
   contentId: string,
   attachmentId: string,
 ) {
-  const { ownedContent } = await getOwnedContent(contentId)
+  const { viewer, ownedContent } = await getOwnedContent(contentId)
   if (!ownedContent) {
     return { ok: false, error: 'This content item is not available.' }
   }
 
-  await db
+  const removed = await db
     .delete(contentMedia)
     .where(
       and(
@@ -228,6 +317,10 @@ export async function removeMediaAttachmentAction(
         eq(contentMedia.contentItemId, contentId),
       ),
     )
+    .returning()
+  if (removed.length > 0) {
+    await recordMediaVersion(contentId, viewer, ownedContent.clientId)
+  }
 
   revalidatePath('/hub/content')
   revalidatePath(`/hub/content/${contentId}`)

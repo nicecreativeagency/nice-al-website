@@ -11,15 +11,22 @@ import {
 import { requireAdmin } from '@/lib/dal'
 import { db } from '@/lib/db'
 import {
+  campaign,
+  approvalRequest,
   client,
   contentItem,
+  contentMedia,
   contentPlatformTarget,
+  contentVersion,
+  mediaAsset,
   type SocialPlatform,
 } from '@/lib/db/schema'
+import { recordActivity } from '@/lib/activity'
 
 const updateContentSchema = z
   .object({
     clientId: z.string().trim().min(1, 'Choose a client.'),
+    campaignId: z.string().trim().optional(),
     title: z
       .string()
       .trim()
@@ -77,6 +84,7 @@ export async function updateContentAction(
   const viewer = await requireAdmin()
   const parsed = updateContentSchema.safeParse({
     clientId: formData.get('clientId'),
+    campaignId: formData.get('campaignId') || undefined,
     title: formData.get('title'),
     contentType: formData.get('contentType'),
     caption: formData.get('caption'),
@@ -97,7 +105,11 @@ export async function updateContentAction(
   }
 
   const [existingItem] = await db
-    .select({ id: contentItem.id })
+    .select({
+      id: contentItem.id,
+      currentVersion: contentItem.currentVersion,
+      status: contentItem.status,
+    })
     .from(contentItem)
     .where(
       and(
@@ -129,6 +141,25 @@ export async function updateContentAction(
     }
   }
 
+  let selectedCampaignId: string | null = null
+  if (parsed.data.campaignId) {
+    const [selectedCampaign] = await db
+      .select({ id: campaign.id })
+      .from(campaign)
+      .where(
+        and(
+          eq(campaign.id, parsed.data.campaignId),
+          eq(campaign.organizationId, viewer.organization.id),
+          eq(campaign.clientId, selectedClient.id),
+        ),
+      )
+      .limit(1)
+    if (!selectedCampaign) {
+      return { error: 'The selected campaign does not belong to this client.' }
+    }
+    selectedCampaignId = selectedCampaign.id
+  }
+
   const selectedPlatforms = Array.from(new Set(parsed.data.platforms))
   const captionOverrides: Record<SocialPlatform, string | null> = {
     facebook:
@@ -144,18 +175,23 @@ export async function updateContentAction(
         ? parsed.data.linkedinCaption
         : null,
   }
+  const nextVersion = existingItem.currentVersion + 1
 
   try {
     await db
       .update(contentItem)
       .set({
         clientId: selectedClient.id,
+        campaignId: selectedCampaignId,
         title: parsed.data.title,
         contentType: parsed.data.contentType,
         caption: parsed.data.caption,
         scheduledDate: parsed.data.scheduledDate ?? null,
         scheduledTime: parsed.data.scheduledTime ?? null,
         timezone: selectedClient.timezone,
+        currentVersion: nextVersion,
+        status: 'draft',
+        approvedVersion: null,
         updatedAt: new Date(),
       })
       .where(
@@ -220,6 +256,57 @@ export async function updateContentAction(
           ),
       ),
     )
+
+    const [savedTargets, savedMedia] = await Promise.all([
+      db
+        .select({
+          platform: contentPlatformTarget.platform,
+          caption: contentPlatformTarget.caption,
+        })
+        .from(contentPlatformTarget)
+        .where(eq(contentPlatformTarget.contentItemId, contentId)),
+      db
+        .select({
+          mediaAssetId: mediaAsset.id,
+          secureUrl: mediaAsset.secureUrl,
+          resourceType: mediaAsset.resourceType,
+          sortOrder: contentMedia.sortOrder,
+        })
+        .from(contentMedia)
+        .innerJoin(mediaAsset, eq(mediaAsset.id, contentMedia.mediaAssetId))
+        .where(eq(contentMedia.contentItemId, contentId)),
+    ])
+
+    await db.insert(contentVersion).values({
+      id: crypto.randomUUID(),
+      contentItemId: contentId,
+      versionNumber: nextVersion,
+      createdByUserId: viewer.user.id,
+      title: parsed.data.title,
+      contentType: parsed.data.contentType,
+      caption: parsed.data.caption,
+      platformSnapshot: savedTargets,
+      mediaSnapshot: savedMedia,
+    })
+    if (existingItem.status === 'waiting_approval') {
+      await db
+        .update(approvalRequest)
+        .set({ status: 'cancelled', updatedAt: new Date() })
+        .where(
+          and(
+            eq(approvalRequest.contentItemId, contentId),
+            eq(approvalRequest.status, 'pending'),
+          ),
+        )
+    }
+    await recordActivity({
+      organizationId: viewer.organization.id,
+      clientId: selectedClient.id,
+      contentItemId: contentId,
+      actor: { id: viewer.user.id, name: viewer.user.name },
+      action: 'content.version_created',
+      metadata: { version: nextVersion, title: parsed.data.title },
+    })
   } catch (error) {
     console.error('Failed to update content item', error)
     return { error: 'The content item could not be updated. Please try again.' }

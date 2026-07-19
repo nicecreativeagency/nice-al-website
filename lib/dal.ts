@@ -1,7 +1,7 @@
 import 'server-only'
 
 import { cache } from 'react'
-import { and, eq } from 'drizzle-orm'
+import { and, count, eq, inArray, isNull } from 'drizzle-orm'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
@@ -9,6 +9,9 @@ import { db } from '@/lib/db'
 import {
   client,
   clientMember,
+  contentItem,
+  approvalRequest,
+  notification,
   organization,
   organizationMember,
   type Role,
@@ -34,6 +37,8 @@ export type Viewer = {
     brandColor: string
     timezone: string
   }>
+  pendingApprovals: number
+  unreadNotifications: number
 }
 
 export const getSession = cache(async () => {
@@ -84,6 +89,33 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
         : eq(client.organizationId, membership.organizationId),
     )
 
+  const clientIds = assignedClients.map((item) => item.id)
+  const [pending] =
+    membership.role === 'client' && clientIds.length === 0
+      ? [{ value: 0 }]
+      : await db
+          .select({ value: count() })
+          .from(approvalRequest)
+          .innerJoin(contentItem, eq(contentItem.id, approvalRequest.contentItemId))
+          .where(
+            and(
+              eq(approvalRequest.organizationId, membership.organizationId),
+              eq(approvalRequest.status, 'pending'),
+              membership.role === 'client'
+                ? inArray(contentItem.clientId, clientIds)
+                : undefined,
+            ),
+          )
+  const [unread] = await db
+    .select({ value: count() })
+    .from(notification)
+    .where(
+      and(
+        eq(notification.recipientUserId, session.user.id),
+        isNull(notification.readAt),
+      ),
+    )
+
   return {
     user: session.user,
     organization: {
@@ -93,6 +125,8 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
     },
     role: membership.role as Role,
     clients: assignedClients,
+    pendingApprovals: pending?.value ?? 0,
+    unreadNotifications: unread?.value ?? 0,
   }
 })
 

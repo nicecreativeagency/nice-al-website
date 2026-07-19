@@ -15,6 +15,7 @@ import {
 import { requireAdmin } from '@/lib/dal'
 import { db } from '@/lib/db'
 import {
+  campaign,
   client,
   contentItem,
   contentPlatformTarget,
@@ -44,6 +45,16 @@ export default async function ContentPage({
 }) {
   const viewer = await requireAdmin()
   const { created } = await searchParams
+
+  const campaigns = await db
+    .select({
+      id: campaign.id,
+      clientId: campaign.clientId,
+      name: campaign.name,
+    })
+    .from(campaign)
+    .where(eq(campaign.organizationId, viewer.organization.id))
+    .orderBy(desc(campaign.createdAt))
 
   const rows = await db
     .select({
@@ -95,7 +106,9 @@ export default async function ContentPage({
         eyebrow="Content operations"
         title="Content"
         description="Create and prepare content for every client and social channel."
-        action={<NewContentDialog clients={viewer.clients} />}
+        action={
+          <NewContentDialog clients={viewer.clients} campaigns={campaigns} />
+        }
       />
 
       {created && (
