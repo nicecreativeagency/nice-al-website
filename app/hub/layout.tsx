@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './hub.css'
+import './studio-ui.css'
 
 export const metadata: Metadata = {
   title: 'Social Hub',

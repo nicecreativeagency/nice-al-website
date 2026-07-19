@@ -78,6 +78,14 @@ export function HubShell({
   }, [viewer.unreadNotifications])
   const isAdmin = viewer.role !== 'client'
   const navigation = isAdmin ? adminNavigation : clientNavigation
+  const currentNavigation = navigation.find(
+    (item) =>
+      pathname === item.href ||
+      (item.href !== '/hub/dashboard' && pathname.startsWith(item.href)),
+  )
+  const currentPageLabel = pathname.startsWith('/hub/settings')
+    ? 'Settings'
+    : currentNavigation?.label ?? 'Social Hub'
   const initials = viewer.user.name
     .split(' ')
     .map((part) => part[0])
@@ -241,7 +249,37 @@ export function HubShell({
         </div>
       </aside>
 
-      <main className="hubMain">{children}</main>
+      <div className="hubDesktopTopbar">
+        <div>
+          <small>{isAdmin ? viewer.organization.name : viewer.clients[0]?.name ?? 'Client portal'}</small>
+          <strong>{currentPageLabel}</strong>
+        </div>
+        <div className="hubDesktopActions">
+          <button
+            className="hubDesktopSearch"
+            onClick={() => setCommandOpen(true)}
+            type="button"
+          >
+            <Search aria-hidden="true" size={17} />
+            <span>Search anything</span>
+            <kbd>Ctrl K</kbd>
+          </button>
+          <button
+            aria-label={`Notifications${unreadCount ? `, ${unreadCount} unread` : ''}`}
+            className="hubDesktopIconButton"
+            onClick={() => setNotificationOpen(true)}
+            type="button"
+          >
+            <Bell aria-hidden="true" size={18} />
+            {unreadCount ? <small>{Math.min(unreadCount, 99)}</small> : null}
+          </button>
+          <span className="hubDesktopAvatar" title={viewer.user.name}>{initials}</span>
+        </div>
+      </div>
+
+      <main className="hubMain">
+        <div className="hubMainCanvas">{children}</div>
+      </main>
       <CommandPalette
         isAdmin={isAdmin}
         navigation={navigation.map(({ label, href }) => ({ label, href }))}

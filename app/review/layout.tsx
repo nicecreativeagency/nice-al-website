@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import '@/app/hub/hub.css'
+import '@/app/hub/studio-ui.css'
 
 export const metadata: Metadata = {
   title: 'Content Review · NICE',

@@ -12,11 +12,11 @@ export function PageHeader({
   return (
     <header className="hubPageHeader">
       <div>
-        <p>{eyebrow}</p>
+        <p><span aria-hidden="true" />{eyebrow}</p>
         <h1>{title}</h1>
         <span>{description}</span>
       </div>
-      {action}
+      {action ? <div className="hubPageHeaderAction">{action}</div> : null}
     </header>
   )
 }

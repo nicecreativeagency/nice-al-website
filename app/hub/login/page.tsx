@@ -1,7 +1,13 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { ArrowLeft, LockKeyhole } from 'lucide-react'
+import {
+  ArrowLeft,
+  ArrowUpRight,
+  CalendarDays,
+  CheckCircle2,
+  LockKeyhole,
+} from 'lucide-react'
 import { getViewer } from '@/lib/dal'
 import { LoginForm } from './login-form'
 
@@ -31,14 +37,41 @@ export default async function LoginPage() {
             <span>NICE</span>
           </div>
           <p className="loginEyebrow">NICE Social Hub</p>
-          <h1>One place for content to move forward.</h1>
+          <h1>Content work,<br />finally in one place.</h1>
           <p>
-            Plan, review and approve social content without scattered threads,
-            spreadsheets or guesswork.
+            Plan every client, collect decisions and keep publishing work moving
+            without scattered threads or spreadsheets.
           </p>
+
+          <div className="loginProductPreview" aria-hidden="true">
+            <div className="loginPreviewTop">
+              <span>
+                <small>Today</small>
+                <strong>Content flow</strong>
+              </span>
+              <i><ArrowUpRight size={16} /></i>
+            </div>
+            <div className="loginPreviewGrid">
+              <article>
+                <CalendarDays size={17} />
+                <strong>08</strong>
+                <span>Scheduled</span>
+              </article>
+              <article>
+                <CheckCircle2 size={17} />
+                <strong>03</strong>
+                <span>Approved</span>
+              </article>
+              <article className="loginPreviewWide">
+                <span>Client review</span>
+                <strong>Everything ready for the week.</strong>
+                <i>6 / 6</i>
+              </article>
+            </div>
+          </div>
         </div>
 
-        <p className="loginPanelFooter">Built for focused agency–client work.</p>
+        <p className="loginPanelFooter">Content operations by NICE.</p>
       </section>
 
       <section className="loginFormPanel">
