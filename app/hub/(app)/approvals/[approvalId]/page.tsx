@@ -74,6 +74,11 @@ export default async function ApprovalDetailPage({
         <div><small>{review.clientName} · Version {review.versionNumber}</small><h1>{review.versionTitle ?? review.title}</h1><p>{review.message || 'Content ready for review.'}</p></div>
         <span className={`approvalBadge is-${review.approvalStatus}`}>{review.approvalStatus.replaceAll('_', ' ')}</span>
       </header>
+      <p className="reviewSchedule">
+        Planned: {review.scheduledDate ?? 'Date not set'}
+        {review.scheduledTime ? ` · ${review.scheduledTime.slice(0, 5)}` : ''}
+        {' · '}{review.timezone}
+      </p>
       <div className="reviewGrid">
         <main>
           <div className="reviewMedia">

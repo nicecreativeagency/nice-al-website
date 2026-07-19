@@ -85,6 +85,11 @@ export default async function GuestReviewPage({
         <small>{review.clientName} · Version {review.versionNumber}</small>
         <h1>{review.versionTitle ?? review.title}</h1>
         <p>{review.message || 'NICE shared this content for your review.'}</p>
+        <p className="reviewSchedule">
+          Planned: {review.scheduledDate ?? 'Date not set'}
+          {review.scheduledTime ? ` · ${review.scheduledTime.slice(0, 5)}` : ''}
+          {' · '}{review.timezone}
+        </p>
         <span className={`approvalBadge is-${review.approvalStatus}`}>{review.approvalStatus.replaceAll('_', ' ')}</span>
       </section>
       <div className="reviewGrid">

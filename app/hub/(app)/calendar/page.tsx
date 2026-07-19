@@ -160,6 +160,35 @@ export default async function CalendarPage({
             )
           })}
         </section>
+      ) : view === 'week' ? (
+        <section className="calendarMonth calendarWeek">
+          {days.slice(0, 7).map((day) => {
+            const date = day.toISOString().slice(0, 10)
+            const dayItems = items.filter((item) => item.scheduledDate === date)
+            return (
+              <div key={date}>
+                <time>
+                  {day.toLocaleDateString('en-GB', {
+                    weekday: 'short',
+                    day: 'numeric',
+                    month: 'short',
+                    timeZone: 'UTC',
+                  })}
+                </time>
+                {dayItems.map((item) => (
+                  <Link
+                    href={viewer.role === 'client' ? '/hub/approvals' : `/hub/content/${item.id}`}
+                    key={item.id}
+                    style={{ borderLeftColor: item.clientColor }}
+                  >
+                    <small>{item.scheduledTime?.slice(0, 5) ?? 'Any time'} · {item.clientName}</small>
+                    <span>{item.title}</span>
+                  </Link>
+                ))}
+              </div>
+            )
+          })}
+        </section>
       ) : (
         <section className="calendarList">
           {monthItems.length === 0 ? (

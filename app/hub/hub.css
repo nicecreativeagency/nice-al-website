@@ -2461,6 +2461,16 @@
   padding: 8px;
 }
 
+.calendarWeek > div {
+  min-height: 360px;
+}
+
+.reviewSchedule {
+  color: var(--hub-muted);
+  font-size: 13px;
+  margin: -14px 0 22px;
+}
+
 .calendarMonth > div.outside {
   background: #f7f6f2;
   opacity: .55;
