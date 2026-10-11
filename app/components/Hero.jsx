@@ -131,22 +131,6 @@ export default function Hero({ loaded }) {
           <Marquee items={CLIENTS} speed={26} />
         </motion.div>
       )}
-
-      <motion.a
-        href={HOMEPAGE_SECTIONS.work ? '#work' : '#studio'}
-        className={styles.scrollHint}
-        data-cursor="hover"
-        initial={{ opacity: 0 }}
-        animate={loaded ? { opacity: 1 } : {}}
-        transition={{ delay: 2.2, duration: 1 }}
-      >
-        <span>Scroll</span>
-        <motion.div
-          className={styles.scrollLine}
-          animate={{ scaleY: [0, 1, 0], originY: [0, 0, 1] }}
-          transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-        />
-      </motion.a>
     </section>
   )
 }

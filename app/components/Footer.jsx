@@ -1,95 +1,20 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
-import Marquee from './Marquee'
 import styles from './Footer.module.css'
-import { HOMEPAGE_SECTIONS } from '../homepage-config'
-
-const SOCIALS = [
-  { label: 'Instagram', url: 'https://instagram.com/nice.al' },
-  { label: 'Behance', url: 'https://behance.net/niceal' },
-  { label: 'Dribbble', url: 'https://dribbble.com/niceal' },
-  { label: 'LinkedIn', url: 'https://linkedin.com/company/niceal' },
-]
-
-const NAV = [
-  ...(HOMEPAGE_SECTIONS.work ? [{ label: 'Work', href: '#work' }] : []),
-  { label: 'What we do', href: '#capabilities' },
-  { label: 'About', href: '#about' },
-  { label: 'Products', href: '#products' },
-]
-
-function useLocalTime() {
-  const [time, setTime] = useState('')
-  useEffect(() => {
-    const update = () => {
-      const t = new Intl.DateTimeFormat('en-GB', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        timeZone: 'Europe/Berlin',
-      }).format(new Date())
-      setTime(t)
-    }
-    update()
-    const id = setInterval(update, 1000)
-    return () => clearInterval(id)
-  }, [])
-  return time
-}
 
 export default function Footer() {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-10%' })
-  const time = useLocalTime()
 
   return (
     <footer className={styles.footer} ref={ref}>
-      <a href="#contact" className={styles.marqueeLink} data-cursor="view" data-cursor-label="Say hi">
-        <div className={styles.marquee}>
-          <Marquee
-            items={["Let's make something nice", "Let's make something nice"]}
-            speed={22}
-            separator="✳"
-          />
-        </div>
-      </a>
-
       <div className={styles.body}>
         <motion.div
-          className={styles.top}
-          initial={{ opacity: 0, y: 30 }}
+          className={styles.bottom}
+          initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
-          <div className={styles.cta}>
-            <span className={styles.label}>Get in touch</span>
-            <a href="mailto:hello@nice.al" className={styles.email} data-cursor="hover">
-              hello@nice.al
-            </a>
-          </div>
-
-          <div className={styles.cols}>
-            <div className={styles.col}>
-              <span className={styles.colTitle}>Menu</span>
-              {NAV.map((n) => (
-                <a key={n.label} href={n.href} className={styles.colLink} data-cursor="hover">{n.label}</a>
-              ))}
-            </div>
-            <div className={styles.col}>
-              <span className={styles.colTitle}>Social</span>
-              {SOCIALS.map((s) => (
-                <a key={s.label} href={s.url} target="_blank" rel="noopener noreferrer" className={styles.colLink} data-cursor="hover">{s.label}</a>
-              ))}
-            </div>
-            <div className={styles.col}>
-              <span className={styles.colTitle}>Europe/Berlin Time</span>
-              <span className={styles.clock}>{time}</span>
-              <span className={styles.place}>CET / CEST</span>
-            </div>
-          </div>
-        </motion.div>
-
-        <div className={styles.bottom}>
           <svg viewBox="0 0 575.91 191.09" className={styles.logo}>
             <rect y="0" width="191.09" height="191.09" rx="29.18" ry="29.18" fill="#fff"/>
             <g opacity="0.2">
@@ -106,7 +31,7 @@ export default function Footer() {
           </svg>
 
           <p className={styles.copy}>&copy; 2017&ndash;2026 NICE.al. Made with care by two.</p>
-        </div>
+        </motion.div>
       </div>
     </footer>
   )
